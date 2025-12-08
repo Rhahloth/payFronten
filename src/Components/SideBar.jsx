@@ -51,24 +51,12 @@ const Sidebar = () => {
                             </li>
                         </Link>
 
-                        { role === "super_admin" ? 
-                            (
-                                <Link to="/signup-institution">
-                                    <li className="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
-                                        <FaSignOutAlt size={24}/>
-                                        <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Register Institution</span>
-                                    </li>
-                                </Link>
-                            ): (
-                                <Link to="/login">
-                                    <li className="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
-                                        <FaCog size={24}/>
-                                        <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Login as Super Admin</span>
-                                    </li>
-                                </Link>
-                            )
-                            
-                        }
+                        <Link to="/login">
+                            <li className="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
+                                <FaCog size={24}/>
+                                <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Login as Super Admin</span>
+                            </li>
+                        </Link>
                     </ul>
                 </nav>
             </div>

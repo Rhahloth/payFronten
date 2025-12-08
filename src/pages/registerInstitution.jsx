@@ -101,7 +101,7 @@ const RegisterInstituition = () =>{
                         <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
                         <input type="text" onChange={(e) => SetContactPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact phone" />
                     </div>
-                    <button type="submit"  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Register Institution</button>
+                    <button type="submit"  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create Institution</button>
                 </form>
             </div>
         </div>
