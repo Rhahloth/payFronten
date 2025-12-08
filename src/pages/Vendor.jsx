@@ -1,23 +1,22 @@
 import { Link } from "react-router-dom"
-import SectionHeader from "../Components/SectionHeader"
-import Navbar from "../Components/NavBar"
-import { FaPlus } from "react-icons/fa"
-import Sidebar from "../Components/Sidebar"
 import MainContent from "../Components/MainContent"
+import NavBar from "../Components/NavBar"
+import SectionHeader from "../Components/SectionHeader"
+import Sidebar from "../Components/Sidebar"
 
 
-const Cards = () => {
+const Vendor = () =>{
 
     return(
         <div className="w-full">
             <Sidebar />
             <MainContent>
-            <Navbar />
-            <SectionHeader title="Cards Management" />
-            <div className="ml-20">
-                <h2>Available Card <span className="ml-20 text-blue-700"><Link to="/create-card"> Create New Card </Link></span><br/></h2>
-            </div>
-            <div className="p-10 w-full">
+                <NavBar />
+                <SectionHeader title="View All Vendors" />
+                <div className="ml-20">
+                    <h2>Available Vendors <span className="ml-20 text-blue-700"> <Link to="/create-vendor">Create Vendor</Link> </span> </h2>
+                </div>
+                <div className="p-10 w-full">
                 <table className=" bg-white mt-6 w-full">
                     <thead>
                         <tr>
@@ -50,9 +49,9 @@ const Cards = () => {
                 </table>
             </div>
             </MainContent>
-        </div> 
-        
+        </div>
     )
+
 }
 
-export default Cards
+export default Vendor

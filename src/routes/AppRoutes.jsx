@@ -5,6 +5,9 @@ import RegisterInstituition from "../pages/registerInstitution";
 import Cards from "../pages/Cards"; 
 import CreateCard from "../pages/CreateCard";
 import {Routes, Route } from "react-router-dom";
+import Institution from "../pages/Institution";
+import Vendor from "../pages/Vendor";
+import CreateVendor from "../pages/CreateVendor";
 
 
 const AppRoutes = () => {
@@ -16,6 +19,9 @@ const AppRoutes = () => {
             <Route path="/register-user" element={<RegisterUser />} />
             <Route path="/cards" element={<Cards />} />
             <Route path="/create-card" element={<CreateCard />} />
+            <Route path="/institutions" element={ <Institution /> } />
+            <Route path="/vendors" element={ <Vendor />} />
+            <Route path="/create-vendor" element={ <CreateVendor /> } />
         </Routes>
     )
 
