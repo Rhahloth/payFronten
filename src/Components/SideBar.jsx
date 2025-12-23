@@ -51,10 +51,24 @@ const Sidebar = () => {
                             </li>
                         </Link>
 
+                        <Link to="/customer">
+                            <li className="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
+                                <FaCog size={24}/>
+                                <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Customers</span>
+                            </li>
+                        </Link>
+
+                        <Link to="/platform-admin">
+                            <li className="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
+                                <FaCog size={24}/>
+                                <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Platform Admin</span>
+                            </li>
+                        </Link>
+
                         <Link to="/login">
                             <li className="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
                                 <FaCog size={24}/>
-                                <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Login as Super Admin</span>
+                                <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Login</span>
                             </li>
                         </Link>
                     </ul>

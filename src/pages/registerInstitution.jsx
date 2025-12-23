@@ -8,7 +8,9 @@ import NavBar from "../Components/NavBar"
 import SectionHeader from "../Components/SectionHeader"
 import Sidebar from "../Components/Sidebar"
 
-const RegisterInstituition = () =>{
+
+
+const RegisterInstituition = () => {
 
 
     // /api/institutions/register
@@ -30,6 +32,7 @@ const RegisterInstituition = () =>{
     const [Location, SetLocation] = useState("")
     const [ContactPerson, SetContactPerson] = useState("")
     const [ContactPhone, SetContactPhone] = useState("")
+    
 
     const registerInstitution = async (e) => {
         e.preventDefault()
@@ -45,67 +48,65 @@ const RegisterInstituition = () =>{
 
         }
 
-        try{
-            const resp = await axios.post("https://edutest-le5y.onrender.com/api/institutions/register", payload,{
+        try {
+            const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/institutions", payload, {
                 headers: {
-                    "Content-Type":"application/json",
+                    "Content-Type": "application/json",
                     Authorization: authHeader()
                 }
             })
-
-            console.log(resp)
 
             console.log(resp.data)
 
             alert("Successful, Check your email for passwords")
 
-        }catch (err){
+        } catch (err) {
             console.log(err)
         }
     }
 
-    return(
+    return (
         <>
-        <Sidebar />
-        <MainContent>
-            <NavBar />
-            <SectionHeader title="Create Institution" />
-            <div className="h-screen w-full">
-            <div className="flex flex-col items-center justify-center">
-                <form className="bg-white p-6 rounded shadow-md w-2/4" onSubmit={registerInstitution}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Username</label>
-                        <input type="text" onChange={(e) => setUsername(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your username" />
+            <Sidebar />
+            <MainContent>
+                <NavBar />
+                <SectionHeader title="Create Institution" />
+                <div className="h-screen w-full">
+                    <div className="flex flex-col items-center justify-center">
+                        <form className="bg-white p-6 rounded shadow-md w-2/4" onSubmit={registerInstitution}>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                                <input type="text" onChange={(e) => setUsername(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your username" />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Type</label>
+                                <input type="text" onChange={(e) => SetType(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="eg school" />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                                <input type="email" onChange={(e) => SetEmail(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your email" />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+                                <input type="text" onChange={(e) => SetPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Phone number" />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
+                                <input type="text" onChange={(e) => SetLocation(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Location" />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
+                                <input type="text" onChange={(e) => SetContactPerson(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact person" />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
+                                <input type="text" onChange={(e) => SetContactPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact phone" />
+                            </div>
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create Institution</button>
+                        </form>
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Type</label>
-                        <input type="text" onChange={(e) => SetType(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="eg school" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                        <input type="email" onChange={(e) => SetEmail(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your email" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                        <input type="text" onChange={(e) => SetPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Phone number" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
-                        <input type="text" onChange={(e) => SetLocation(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Location" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
-                        <input type="text" onChange={(e) => SetContactPerson(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact person" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
-                        <input type="text" onChange={(e) => SetContactPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact phone" />
-                    </div>
-                    <button type="submit"  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create Institution</button>
-                </form>
-            </div>
-        </div>
-        </MainContent>
+                </div>
+            </MainContent>
         </>
     )
 }

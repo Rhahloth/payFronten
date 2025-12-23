@@ -20,7 +20,7 @@ const Login =() =>{
         e.preventDefault()
 
         const payload = {
-            username: username,   // MUST match FastAPI
+            email: username,   // MUST match FastAPI
             password: password    // MUST match FastAPI
         };
 
