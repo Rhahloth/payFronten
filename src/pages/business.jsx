@@ -148,9 +148,6 @@ const Business = () => {
         }
     };
 
-
-
-
     return (
         <div className="w-full">
             <Sidebar />
@@ -198,7 +195,7 @@ const Business = () => {
                 </div>
                 {editingItem && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded-lg w-180">
+                        <div className="bg-white p-6 rounded-lg w-180 max-h-[90vh] overflow-y-auto">
                             <h2 className="text-lg font-bold mb-4">Edit {editingItem.name}</h2>
 
                             <div className="mb-4">

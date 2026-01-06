@@ -61,7 +61,7 @@ const Sidebar = () => {
                         <Link to="/agent-admin">
                             <li className="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
                                 <FaUser size={24}/>
-                                <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Agent Admin</span>
+                                <span className={`ml-4 md:block ${isOpen ? "block": "hidden"}`}>Account Admin</span>
                             </li>
                         </Link>
 

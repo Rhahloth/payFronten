@@ -152,9 +152,9 @@ const AgentAdmin = () => {
             <Sidebar />
             <MainContent>
                 <NavBar />
-                <SectionHeader title="View All Agent Admins" />
+                <SectionHeader title="View All Accounts" />
                 <div className="ml-20">
-                    <h2>Available Agent <span className="ml-20 text-blue-700"> <Link to="/create-agent-admin">Create Agent Admin</Link></span></h2>
+                    <h2>Available Accounts <span className="ml-20 text-blue-700"> <Link to="/create-agent-admin">Create Account</Link></span></h2>
                 </div>
                 <div className="p-10 w-full">
                     <table className=" bg-white mt-6 w-full">
@@ -164,10 +164,7 @@ const AgentAdmin = () => {
                                 <th className="py-2 px-4 border-b border-gray-200">Email</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Phone</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Role</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Institution ID</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Vendor ID</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Active</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Verified</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Edit</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Delete</th>
                             </tr>
@@ -179,10 +176,7 @@ const AgentAdmin = () => {
                                     <td className="py-2 px-4 border-b border-gray-200">{institution.email}</td>
                                     <td className="py-2 px-4 border-b border-gray-200">{institution.phone}</td>
                                     <td className="py-2 px-4 border-b border-gray-200">{institution.role}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.institution_public_id}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.vendor_public_id}</td>
                                     <td className="py-2 px-4 border-b border-gray-200">{institution.is_active}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.is_verified}</td>
                                     <td onClick={() => handleEditClick(institution)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
                                     <td onClick={() => setDeleteItem(institution)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
                                 </tr>
