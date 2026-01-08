@@ -8,10 +8,9 @@ import { AuthContext } from "../context/authContext";
 
 
 
-const Login =() =>{
+const Login = () =>{
 
     const navigate = useNavigate()
-    const { setRole } = useContext(AuthContext)
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -24,8 +23,6 @@ const Login =() =>{
             password: password    // MUST match FastAPI
         };
 
-        console.log(payload)
-         
         try{
             const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/login", 
                 payload,
@@ -36,11 +33,10 @@ const Login =() =>{
             });
 
             const token = resp.data.access_token
-            localStorage.setItem("token", token)
-
+            sessionStorage.setItem("token", token)
 
             const role = resp.data.role 
-            setRole(role)
+            sessionStorage.setItem("role", role)
 
             navigate("/")
 
