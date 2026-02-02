@@ -17,6 +17,8 @@ import Logout from "../pages/logout";
 import CustomerLogin from "../pages/Customer_login";
 import CustomerSignup from "../pages/Customer_signup";
 import CustomerPage from "../pages/Customer_page";
+import ActivateAccount from "../pages/activate";
+import ResendToken from "../pages/resendToken";
 
 
 
@@ -30,6 +32,8 @@ const AppRoutes = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/customer-login" element={ <CustomerLogin /> } />
             <Route path="/customer-signup" element={ <CustomerSignup /> } />
+            <Route path="/activate" element={<ActivateAccount />} />
+            <Route path="/resend_token" element={<ResendToken/>} />
             {/* Protected routes  */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/" element={<HomePage />} />

@@ -44,7 +44,7 @@ const CreateVendor = () =>{
                     "Authorization": authHeader()
                 }
             })
-
+            
             console.log(resp.data)
             alert("Vendor created successfully")
 

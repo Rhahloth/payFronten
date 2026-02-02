@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 import { authHeader } from "../utils/authHeader"
 
 
-const Vendor = () =>{
+const Vendor = () => {
 
 
     // retreive data from /api/institutions
@@ -54,15 +54,15 @@ const Vendor = () =>{
 
     console.log("items", items)
 
-//     {
-//   "name": "string",
-//   "type": "string",
-//   "email": "user@example.com",
-//   "location": "string",
-//   "contact_person": "string",
-//   "contact_phone": "string",
-//   "status": "pending"
-// }
+    //     {
+    //   "name": "string",
+    //   "type": "string",
+    //   "email": "user@example.com",
+    //   "location": "string",
+    //   "contact_person": "string",
+    //   "contact_phone": "string",
+    //   "status": "pending"
+    // }
 
     const handleEditClick = (item) => {
         setEditingItem(item);          // Open modal
@@ -133,7 +133,7 @@ const Vendor = () =>{
         }
     };
 
-    return(
+    return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
@@ -158,22 +158,28 @@ const Vendor = () =>{
                                 <th className="py-2 px-4 border-b border-gray-200">Delete</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {items.map((item) => (
-                                <tr>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.vendor_code}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.name}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.type}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.email}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.location}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.contact_person}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.contact_phone}</td>
-                                <td onClick={() => handleEditClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                <td onClick={() => setDeleteItem(item)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
-                            </tr>
-                            ))}         
-                        </tbody>
+                        {loading ? (
+                            <div className="w-full border p-2 rounded flex items-center justify-center">
+                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                            </div>
+                        ) : (
+                            <tbody>
+                                {items.map((item) => (
+                                    <tr>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.vendor_code}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.name}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.type}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.email}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.location}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.contact_person}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.contact_phone}</td>
+                                        <td onClick={() => handleEditClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
+                                        <td onClick={() => setDeleteItem(item)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        )}
                     </table>
                 </div>
                 {editingItem && (

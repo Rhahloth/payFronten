@@ -11,7 +11,7 @@ import { AuthContext } from "../context/authContext";
 const Login = () =>{
 
     const navigate = useNavigate()
-
+    const [loading, setLoading] = useState(false)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
@@ -22,6 +22,7 @@ const Login = () =>{
             identifier: username,   // MUST match FastAPI
             password: password    // MUST match FastAPI
         };
+        setLoading(true)
 
         try{
             const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/customer/login", 
@@ -37,11 +38,12 @@ const Login = () =>{
 
             const role = resp.data.role 
             sessionStorage.setItem("role", role)
-
+            setLoading(false)
             navigate("/")
 
         }catch(err){
             console.log("Error", err)
+            setLoading(false)
         }
 
     }
@@ -62,7 +64,13 @@ const Login = () =>{
                         <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
                         <input type="password" className="w-full px-3 py-2 border rounded" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
                     </div>
+                     {loading ? (
+                    <div className="">
+                        <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    </div>
+                ) : (
                     <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Login</button>
+                )}
                 </form>
                 {/* <Link to="/customer-signup" className="mt-4 text-blue-700">Customer Signup</Link> */}
                 <Link to="/login" className="mt-4 text-blue-700">Login as Admin</Link>

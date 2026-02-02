@@ -174,23 +174,29 @@ const Business = () => {
                                 <th className="py-2 px-4 border-b border-gray-200">Delete</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {items.map((institution) => (
-                                <tr key={institution.public_id}>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.code}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.name}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.email}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.phone}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.location}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.contact_person}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.contact_phone}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.type}</td>
-                                    <td className="py-2 px-4 border-b border-gray-200">{institution.status}</td>
-                                    <td onClick={() => handleEditClick(institution)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                    <td onClick={() => setDeleteItem(institution)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
-                                </tr>
-                            ))}
-                        </tbody>
+                        {loading ? (
+                            <div className="w-full border p-2 rounded flex items-center justify-center">
+                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                            </div>
+                        ) : (
+                            <tbody>
+                                {items.map((institution) => (
+                                    <tr key={institution.public_id}>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.code}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.name}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.email}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.phone}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.location}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.contact_person}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.contact_phone}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.type}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{institution.status}</td>
+                                        <td onClick={() => handleEditClick(institution)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
+                                        <td onClick={() => setDeleteItem(institution)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        )}
                     </table>
                 </div>
                 {editingItem && (

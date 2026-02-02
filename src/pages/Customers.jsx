@@ -44,6 +44,16 @@ const Customer = () => {
         status: "",
     });
 
+    // Link card
+    const [cards, setCards] = useState([]);
+    const [linkingItemModel, setLinkingItemModel] = useState(null); // null = no model
+    const [linkFormData, setLinkFormData] = useState({
+        card_uid: "",
+        customer_public_id: "",
+        pin: "",
+        expiry: "",
+    });
+
     // fetch data
     useEffect(() => {
         axios
@@ -134,6 +144,66 @@ const Customer = () => {
         }
     };
 
+    //fetch available cards 
+    // fetch data
+    useEffect(() => {
+        axios
+            .get("https://edutele-pay-backend.onrender.com/api/cards/preprinted", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: authHeader()
+                }
+            })
+            .then((response) => {
+                setCards(response.data.items)
+                setLoading(false)
+            })
+            .catch((err) => {
+                setError("Failed to fetch data")
+                setLoading(false)
+            })
+    }, []);
+
+    console.log("Show available cards", cards);
+
+    const handleLinkCardClick = (item) => {
+        setLinkingItemModel(item);          // Open modal
+        setLinkFormData({                  // Prefill form
+            card_uid: item.card_uid,
+            customer_public_id: item.public_id,
+            pin: item.pin,
+            expiry: item.expiry,
+        });
+    };
+
+    const handleLinkCard = async () => {
+        try {
+            await axios.put(
+                "https://edutele-pay-backend.onrender.com/api/cards/issue",
+                linkFormData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: authHeader(),
+                    },
+                }
+            );
+
+            // Update local state
+            // setItems((prev) =>
+            //     prev.map((item) =>
+            //         item.public_id === editingItem.public_id ? { ...item, ...formData } : item
+            //     )
+            // );
+            alert("Updated succesfully")
+
+            setLinkingItemModel(null); // Close modal
+        } catch (err) {
+            console.error("Failed to update", err);
+        }
+    };
+
+
 
     return (
         <div className="w-full">
@@ -157,24 +227,30 @@ const Customer = () => {
                                 <th className="py-2 px-4 border-b border-gray-200">Edit</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Delete</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Card</th>
-                                
+
                             </tr>
                         </thead>
-                        <tbody>
-                            {items.map((item) => (
-                                <tr>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.full_name}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.phone}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.gender}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.date_of_birth}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.account_type}</td>
-                                <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
-                                <td onClick={() => handleEditClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                <td onClick={() => setDeleteItem(item)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
-                                <td className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Link Card</td>
-                            </tr>
-                            ))}     
-                        </tbody>
+                        {loading ? (
+                            <div className="w-full border p-2 rounded flex items-center justify-center">
+                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                            </div>
+                        ) : (
+                            <tbody>
+                                {items.map((item) => (
+                                    <tr>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.full_name}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.phone}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.gender}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.date_of_birth}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.account_type}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
+                                        <td onClick={() => handleEditClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
+                                        <td onClick={() => setDeleteItem(item)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                        <td onClick={() => handleLinkCardClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Link Card</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        )}
                     </table>
                 </div>
                 {editingItem && (
@@ -248,6 +324,70 @@ const Customer = () => {
                                 <button
                                     className="bg-blue-600 text-white px-4 py-2 rounded"
                                     onClick={handleSave}
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {linkingItemModel && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <div className="bg-white p-6 rounded-lg w-180 max-h-[90vh] overflow-y-auto">
+                            <h2 className="text-lg font-bold mb-4">Link Card</h2>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">
+                                    Card Number
+                                </label>
+
+
+                                <select
+                                    className="w-full mb-2 border p-2 rounded"
+                                    value={linkFormData.card_number}
+                                    onChange={(e) =>
+                                        setLinkFormData({
+                                            ...linkFormData,
+                                            card_number: e.target.value,
+                                        })
+                                    }
+                                >
+                                    <option value="">
+                                        {loading ? "Loading cards..." : "Select a card"}
+                                    </option>
+
+                                    {cards.map((card) => (
+                                        <option key={card.id} value={card.card_number}>
+                                            {card.card_number}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Pin</label>
+                                <input
+                                    type="text"
+                                    className="w-full mb-2 border p-2 rounded"
+                                    placeholder="Pin"
+                                    value={linkFormData.pin}
+                                    onChange={(e) => setLinkFormData({ ...linkFormData, pin: e.target.value })}
+                                />
+                            </div>
+
+                            {/* Add other fields in the same way */}
+
+                            <div className="flex justify-end mt-4">
+                                <button
+                                    className="bg-gray-300 px-4 py-2 rounded mr-2"
+                                    onClick={() => setLinkingItemModel(null)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                                    onClick={handleLinkCard}
                                 >
                                     Save
                                 </button>
