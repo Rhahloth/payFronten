@@ -20,23 +20,33 @@ const CreateCustomer = () => {
 
     const [name, setName] = useState("")
     const [phone, setPhone] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const [gender, setGender] = useState("")
     const [DOB, setDOB] = useState("")
     const [accountType, setAccountType] = useState("")
+    const [status, setStatus] = useState("active")
+    const [is_verified, setIsVerified] = useState(false)
+    const [loading, setLoading] = useState(false)
 
-    const CreateCustomer = async(e) => {
+    const CreateCustomer = async (e) => {
         e.preventDefault()
 
         const paylaod = {
             full_name: name,
             phone: phone,
+            email: email,
+            password: password,
             gender: gender,
             date_of_birth: DOB,
-            account_type: accountType
+            account_type: accountType,
+            status: status,
+            is_verified: is_verified
         }
-        try{
+        setLoading(true)
+        try {
             const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/customers", paylaod, {
-                headers:{
+                headers: {
                     "Content-Type": "application/json",
                     Authorization: authHeader()
                 }
@@ -44,9 +54,11 @@ const CreateCustomer = () => {
 
             console.log(resp.data)
             alert("Customer add successfully")
+            setLoading(false)
 
-        }catch(err) {
+        } catch (err) {
             console.log(err)
+            setLoading(false)
         }
     }
 
@@ -68,6 +80,14 @@ const CreateCustomer = () => {
                             <input type="text" onChange={(e) => setPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter phone number" />
                         </div>
                         <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter email" />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                            <input type="password" onChange={(e) => setPassword(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter phone number" />
+                        </div>
+                        <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Gender</label>
                             <input type="text" onChange={(e) => setGender(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter gender" />
                         </div>
@@ -79,7 +99,14 @@ const CreateCustomer = () => {
                             <label className="block text-gray-700 text-sm font-bold mb-2">Account Type</label>
                             <input type="text" onChange={(e) => setAccountType(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter account type" />
                         </div>
-                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Customer</button>
+                        {loading ? (
+                            <div className="">
+                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                            </div>
+                        ) : (
+                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Customer</button>
+                        )}
+
                     </form>
                 </div>
 

@@ -7,10 +7,13 @@ import MainContent from "../Components/MainContent"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
+import { useNavigate } from "react-router-dom"
 
 
 const Cards = () => {
 
+
+    const navigate = useNavigate()
 
     // retreive data from /api/institutions
     const [items, setItems] = useState([]);
@@ -24,16 +27,7 @@ const Cards = () => {
     // edit items
     const [editingItem, setEditingItem] = useState(null); // null = no modal
     const [formData, setFormData] = useState({
-        name: "",
-        code: "",
-        email: "",
-        phone: "",
-        location: "",
-        contact_person: "",
-        contact_phone: "",
-        type: "",
-        status: "",
-        is_active: false,
+        card_number: "",
     });
 
     // fetch data
@@ -74,7 +68,7 @@ const Cards = () => {
     const handleSave = async () => {
         try {
             await axios.put(
-                `https://edutele-pay-backend.onrender.com/api/vendors/${editingItem.public_id}`,
+                `https://edutele-pay-backend.onrender.com/api/cards/${editingItem.card_uid}`,
                 formData,
                 {
                     headers: {
@@ -87,7 +81,7 @@ const Cards = () => {
             // Update local state
             setItems((prev) =>
                 prev.map((item) =>
-                    item.public_id === editingItem.public_id ? { ...item, ...formData } : item
+                    item.card_uid === editingItem.card_uid ? { ...item, ...formData } : item
                 )
             );
             alert("Updated succesfully")
@@ -106,7 +100,7 @@ const Cards = () => {
 
         try {
             await axios.delete(
-                `https://edutele-pay-backend.onrender.com/api/vendors/${deleteItem.public_id}`,
+                `https://edutele-pay-backend.onrender.com/api/cards/${deleteItem.card_uid}`,
                 {
                     headers: {
                         Authorization: authHeader(),
@@ -116,7 +110,7 @@ const Cards = () => {
 
             // Remove item from table immediately
             setItems((prev) =>
-                prev.filter((item) => item.public_id !== deleteItem.public_id)
+                prev.filter((item) => item.card_uid !== deleteItem.card_uid)
             );
 
             setDeleteItem(null);
@@ -158,15 +152,25 @@ const Cards = () => {
                         ) : (
                             <tbody>
                                 {items.map((item) => (
-                                    <tr>
+                                    <tr
+                                        key={item.card_uid}
+                                        onClick={() => { navigate(`/card/${item.card_uid}`) }}
+                                        className="cursor-pointer hover-bg-gray-100"
+                                    >
                                         <td className="py-2 px-4 border-b border-gray-200">{item.card_number}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.balance}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.total_topups}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.total_spent}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.total_refunds}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                        <td className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditClick()
+                                        }} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation();
+                                            setDeleteItem(item)
+                                        }} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
                                     </tr>
                                 ))}
                             </tbody>

@@ -6,6 +6,7 @@ import Sidebar from "../Components/SideBar"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -27,7 +28,9 @@ const Business = () => {
     //   "updated_at": "2025-12-21T09:48:33.143Z"
     // }
 
-    // retreive data from /api/institutions
+    const navigate = useNavigate()
+
+    // retreive data from /api/business
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true)
@@ -165,9 +168,7 @@ const Business = () => {
                                 <th className="py-2 px-4 border-b border-gray-200">Name</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Email</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Phone</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Location</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Contact Person</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Contact Phone</th>
+                                <th className="py-2 px-4 border-b border-gray-200">Location</th> 
                                 <th className="py-2 px-4 border-b border-gray-200">Type</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Status</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Edit</th>
@@ -181,18 +182,27 @@ const Business = () => {
                         ) : (
                             <tbody>
                                 {items.map((institution) => (
-                                    <tr key={institution.public_id}>
+                                    <tr 
+                                    
+                                        key={institution.public_id}
+                                        onClick={() => {navigate(`/business-detail/${institution.public_id}`)}}
+                                        className="cursor-pointer hover-bg-gray-100"
+                                    >
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.code}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.name}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.email}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.phone}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.location}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.contact_person}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.contact_phone}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.type}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.status}</td>
-                                        <td onClick={() => handleEditClick(institution)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                        <td onClick={() => setDeleteItem(institution)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleEditClick(institution)
+                                            }} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation()
+                                            setDeleteItem(institution)
+                                            }} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
                                     </tr>
                                 ))}
                             </tbody>

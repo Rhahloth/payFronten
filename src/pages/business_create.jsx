@@ -26,12 +26,13 @@ const RegisterBusiness = () => {
     // }
 
     const [Username, setUsername] = useState("")
-    const [type, SetType] = useState("")
-    const [email, SetEmail] = useState("")
-    const [Phone, SetPhone] = useState("")
-    const [Location, SetLocation] = useState("")
-    const [ContactPerson, SetContactPerson] = useState("")
-    const [ContactPhone, SetContactPhone] = useState("")
+    const [type, setType] = useState("")
+    const [email, setEmail] = useState("")
+    const [Phone, setPhone] = useState("")
+    const [Location, setLocation] = useState("")
+    const [ContactPerson, setContactPerson] = useState("")
+    const [ContactPhone, setContactPhone] = useState("")
+    const [loading, setLoading] = useState(false)
     
 
     const registerBusiness = async (e) => {
@@ -47,7 +48,7 @@ const RegisterBusiness = () => {
             contact_phone: ContactPhone
 
         }
-
+        setLoading(true)
         try {
             const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/businesses", payload, {
                 headers: {
@@ -59,9 +60,10 @@ const RegisterBusiness = () => {
             console.log(resp.data)
 
             alert("Successful, Check your email for passwords")
-
+            setLoading(false)
         } catch (err) {
             console.log(err)
+            setLoading(false)
         }
     }
 
@@ -80,29 +82,36 @@ const RegisterBusiness = () => {
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Type</label>
-                                <input type="text" onChange={(e) => SetType(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="eg school" />
+                                <input type="text" onChange={(e) => setType(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="eg school" />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                                <input type="email" onChange={(e) => SetEmail(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your email" />
+                                <input type="email" onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your email" />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                                <input type="text" onChange={(e) => SetPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Phone number" />
+                                <input type="text" onChange={(e) => setPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Phone number" />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
-                                <input type="text" onChange={(e) => SetLocation(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Location" />
+                                <input type="text" onChange={(e) => setLocation(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your Location" />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
-                                <input type="text" onChange={(e) => SetContactPerson(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact person" />
+                                <input type="text" onChange={(e) => setContactPerson(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact person" />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
-                                <input type="text" onChange={(e) => SetContactPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact phone" />
+                                <input type="text" onChange={(e) =>setContactPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your contact phone" />
                             </div>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Business</button>
+                            {loading ? (
+                                <div className="w-full border p-2 rounded flex items-center justify-center">
+                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                            </div>
+                            ):(
+                                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Business</button>
+                            )}
+                            
                         </form>
                     </div>
                 </div>

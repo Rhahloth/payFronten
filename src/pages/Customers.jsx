@@ -169,16 +169,17 @@ const Customer = () => {
     const handleLinkCardClick = (item) => {
         setLinkingItemModel(item);          // Open modal
         setLinkFormData({                  // Prefill form
-            card_uid: item.card_uid,
+            card_uid: "",
             customer_public_id: item.public_id,
-            pin: item.pin,
-            expiry: item.expiry,
+            pin: "",
+            expiry: "",
         });
     };
 
     const handleLinkCard = async () => {
         try {
-            await axios.put(
+            console.log("card issue details", linkFormData)
+            await axios.post(
                 "https://edutele-pay-backend.onrender.com/api/cards/issue",
                 linkFormData,
                 {
@@ -246,7 +247,20 @@ const Customer = () => {
                                         <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
                                         <td onClick={() => handleEditClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
                                         <td onClick={() => setDeleteItem(item)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
-                                        <td onClick={() => handleLinkCardClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Link Card</td>
+                                        <td className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">
+                                            {
+                                                item.has_card ? (
+                                                    <span className="text-green-600 font-semibold">Available</span>
+                                                ) : (
+                                                    <span
+                                                        onClick={() => handleLinkCardClick(item)}  
+                                                        className="text-blue-600 cursor-pointer"
+                                                    >
+                                                        Link Card
+                                                    </span>
+                                                )
+                                            }
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -347,10 +361,22 @@ const Customer = () => {
                                     className="w-full mb-2 border p-2 rounded"
                                     value={linkFormData.card_number}
                                     onChange={(e) =>
-                                        setLinkFormData({
-                                            ...linkFormData,
-                                            card_number: e.target.value,
-                                        })
+                                    // setLinkFormData({
+                                    //     ...linkFormData,
+                                    //     card_number: e.target.value,
+                                    // })
+                                    {
+                                        const selectedCard = cards.find(
+                                            (card) => card.card_number === e.target.value
+                                        );
+
+                                        if (selectedCard) {
+                                            setLinkFormData((prev) => ({
+                                                ...prev,
+                                                card_uid: selectedCard.card_uid,
+                                            }))
+                                        }
+                                    }
                                     }
                                 >
                                     <option value="">
@@ -373,6 +399,17 @@ const Customer = () => {
                                     placeholder="Pin"
                                     value={linkFormData.pin}
                                     onChange={(e) => setLinkFormData({ ...linkFormData, pin: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Expiry</label>
+                                <input
+                                    type="text"
+                                    className="w-full mb-2 border p-2 rounded"
+                                    placeholder="Expiry"
+                                    value={linkFormData.expiry}
+                                    onChange={(e) => setLinkFormData({ ...linkFormData, expiry: e.target.value })}
                                 />
                             </div>
 

@@ -11,13 +11,14 @@ import { authHeader } from "../utils/authHeader";
 const CreateCard = () => {
 
     const [cardNumber, setCardNumber] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const SubmitCard = async(e) => {
         e.preventDefault()
         const payload = {
             card_number:cardNumber
         }
-
+        setLoading(true)
         try{
             const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/cards/preprinted", payload, {
                 headers :{
@@ -26,9 +27,11 @@ const CreateCard = () => {
                 }
             })
             console.log(resp.data)
+            setLoading(false)
             
         }catch(err){
             console.log(err)
+            setLoading(false)
         }
 
     }
@@ -45,7 +48,14 @@ const CreateCard = () => {
                         <label className="block text-gray-700 text-sm font-bold mb-2">Card Number</label>
                         <input type="text" onChange={(e) => setCardNumber(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter card Number" />
                     </div>
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create Card</button>
+                    { loading ? (
+                        <div className="">
+                        <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    </div>
+                    ):(
+                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create Card</button>
+                    )}
+                    
                 </form>
             </div>
             </MainContent>

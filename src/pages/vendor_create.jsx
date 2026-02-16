@@ -22,34 +22,38 @@ const CreateVendor = () =>{
     const [vendorName, setVendorName] = useState("")
     const [vendorEmail, setVendorEmail] = useState("")
     const [vendorType, setVendorType] = useState("")
-    const [vendorLocation, setVendorLocation] = useState()
-    const [vendorContactPerson, setVendorContactPerson] = useState()
-    const [vendorContactPhone, setVendorContactPhone] = useState()
+    const [vendorLocation, setVendorLocation] = useState("")
+    const [vendorContactPerson, setVendorContactPerson] = useState("")
+    const [vendorContactPhone, setVendorContactPhone] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const CreateVendor = async(e) => {
         e.preventDefault()
 
         const payload = {
             name: vendorName,
-            email: vendorEmail,
             type: vendorType,
+            email: vendorEmail,
             location: vendorLocation,
             contact_person: vendorContactPerson,
             contact_phone: vendorContactPhone
         }
+        setLoading(true)
         try{
             const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/vendors", payload, {
                 headers:{
                     "Content-Type": "application/json",
-                    "Authorization": authHeader()
+                    Authorization: authHeader()
                 }
             })
             
             console.log(resp.data)
             alert("Vendor created successfully")
+            setLoading(false)
 
         }catch(err){
             console.log(err)
+            setLoading(false)
         }
 
     }
@@ -87,7 +91,13 @@ const CreateVendor = () =>{
                             <label className="block text-gray-700 text-sm font-bold mb-2"> Contact Phone</label>
                             <input type="text" onChange={(e) => setVendorContactPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter contact phone" />
                         </div>
-                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Vendor</button>
+                         {loading ? (
+                    <div className="">
+                        <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    </div>
+                ) : (
+                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Vendor</button>
+                )}
                     </form>
                 </div>
 

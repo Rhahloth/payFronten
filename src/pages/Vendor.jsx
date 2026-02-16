@@ -152,8 +152,6 @@ const Vendor = () => {
                                 <th className="py-2 px-4 border-b border-gray-200">Email</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Status</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Location</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Contact Person</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Contact Phone</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Edit</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Delete</th>
                             </tr>
@@ -172,8 +170,6 @@ const Vendor = () => {
                                         <td className="py-2 px-4 border-b border-gray-200">{item.email}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.location}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.contact_person}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.contact_phone}</td>
                                         <td onClick={() => handleEditClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
                                         <td onClick={() => setDeleteItem(item)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
                                     </tr>
