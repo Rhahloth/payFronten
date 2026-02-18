@@ -8,6 +8,9 @@ import axios from "axios"
 import { authHeader } from "../utils/authHeader"
 
 const Customer = () => {
+    const [searchTerm, setSearchTerm] = useState(""); // input value
+    const [filteredItems, setFilteredItems] = useState([]); // filtered results
+    
 
 
     // {
@@ -75,6 +78,13 @@ const Customer = () => {
     }, []);
 
     console.log("items", items)
+
+    useEffect(() => {
+        const filtered = items.filter((item) =>
+            item.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredItems(filtered);
+    }, [searchTerm, items]);
 
     const handleEditClick = (item) => {
         setEditingItem(item);          // Open modal
@@ -210,10 +220,19 @@ const Customer = () => {
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                <NavBar />
+                {/* <NavBar /> */}
                 <SectionHeader title="View All Customers" />
                 <div className="ml-20">
                     <h2>Available Customers <span className="ml-20 text-blue-700"><Link to="/create-customer">Add a Customers</Link> </span> </h2>
+                </div>
+                <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
                 <div className="p-10 w-full">
                     <table className=" bg-white mt-6 w-full">
@@ -237,7 +256,7 @@ const Customer = () => {
                             </div>
                         ) : (
                             <tbody>
-                                {items.map((item) => (
+                                {filteredItems.map((item) => (
                                     <tr>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.full_name}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.phone}</td>

@@ -14,6 +14,8 @@ const Cards = () => {
 
 
     const navigate = useNavigate()
+    const [searchTerm, setSearchTerm] = useState(""); // input value
+    const [filteredItems, setFilteredItems] = useState([]); // filtered results
 
     // retreive data from /api/institutions
     const [items, setItems] = useState([]);
@@ -51,6 +53,13 @@ const Cards = () => {
     }, []);
 
     console.log("items", items)
+
+    useEffect(() => {
+        const filtered = items.filter((item) =>
+            item.card_number.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredItems(filtered);
+    }, [searchTerm, items]);
 
     const handleEditClick = (item) => {
         setEditingItem(item);          // Open modal
@@ -126,10 +135,19 @@ const Cards = () => {
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                <Navbar />
+                {/* <Navbar /> */}
                 <SectionHeader title="Cards Management" />
                 <div className="ml-20">
                     <h2>Available Card <span className="ml-20 text-blue-700"><Link to="/create-card">Add a Card</Link> </span> </h2>
+                </div>
+                <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
                 <div className="p-10 w-full">
                     <table className=" bg-white mt-6 w-full">
@@ -151,7 +169,7 @@ const Cards = () => {
                             </div>
                         ) : (
                             <tbody>
-                                {items.map((item) => (
+                                {filteredItems.map((item) => (
                                     <tr
                                         key={item.card_uid}
                                         onClick={() => { navigate(`/card/${item.card_uid}`) }}

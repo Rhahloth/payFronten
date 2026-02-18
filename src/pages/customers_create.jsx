@@ -92,7 +92,7 @@ const CreateCustomer = () => {
                             <input type="text" onChange={(e) => setGender(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter gender" />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Date of Birth | 2026-01-05</label>
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Date of Birth | yy-mm-dd</label>
                             <input type="text" onChange={(e) => setDOB(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter your date of birth" />
                         </div>
                         <div className="mb-4">

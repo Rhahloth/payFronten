@@ -6,11 +6,15 @@ import Sidebar from "../Components/SideBar"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { authHeader } from "../utils/authHeader"
+import { useNavigate } from "react-router-dom"
 
 
 const Vendor = () => {
 
-
+    const navigate = useNavigate()
+    const [searchTerm, setSearchTerm] = useState(""); // input value
+    const [filteredItems, setFilteredItems] = useState([]); // filtered results
+    
     // retreive data from /api/institutions
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
@@ -53,6 +57,13 @@ const Vendor = () => {
     }, []);
 
     console.log("items", items)
+
+    useEffect(() => {
+        const filtered = items.filter((item) =>
+            item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredItems(filtered);
+    }, [searchTerm, items]);
 
     //     {
     //   "name": "string",
@@ -137,10 +148,19 @@ const Vendor = () => {
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                <NavBar />
+                {/* <NavBar /> */}
                 <SectionHeader title="View All Vendors" />
                 <div className="ml-20">
                     <h2>Available Vendors <span className="ml-20 text-blue-700"> <Link to="/create-vendor">Add a Vendor</Link> </span> </h2>
+                </div>
+                <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
                 <div className="p-10 w-full">
                     <table className=" bg-white mt-6 w-full">
@@ -162,16 +182,24 @@ const Vendor = () => {
                             </div>
                         ) : (
                             <tbody>
-                                {items.map((item) => (
-                                    <tr>
+                                {filteredItems.map((item) => (
+                                    <tr 
+                                    key={item.public_id}
+                                    onClick={() => navigate(`/vendor-detail/${item.public_id}`)}
+                                    className="cursor-pointer hover-bg-gray-100"
+                                    >
                                         <td className="py-2 px-4 border-b border-gray-200">{item.vendor_code}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.name}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.type}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.email}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{item.location}</td>
-                                        <td onClick={() => handleEditClick(item)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                        <td onClick={() => setDeleteItem(item)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleEditClick(item)}} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation()
+                                            setDeleteItem(item)}} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
                                     </tr>
                                 ))}
                             </tbody>

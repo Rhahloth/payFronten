@@ -21,6 +21,8 @@ import ActivateAccount from "../pages/activate";
 import ResendToken from "../pages/resendToken";
 import CardDetails from "../pages/card_details";
 import BusinessDetails from "../pages/business_details";
+import VendorDetails from "../pages/vendor_details";
+import UserDetails from "../pages/user_details";
 
 
 
@@ -53,6 +55,8 @@ const AppRoutes = () => {
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/card/:card_uid" element={<CardDetails />} />
                 <Route path="/business-detail/:public_id" element={<BusinessDetails />} />
+                <Route path="/vendor-detail/:public_id" element={<VendorDetails />} />
+                <Route path="/user-detail/:public_id" element={<UserDetails />} />
             </Route>
         </Routes>
     )

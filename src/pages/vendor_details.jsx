@@ -8,7 +8,7 @@ import MainContent from "../Components/MainContent"
 import SectionHeader from "../Components/SectionHeader"
 
 
-const BusinessDetails = () => {
+const VendorDetails = () => {
 
     const { public_id } = useParams()
     const [item, setItem] = useState([])
@@ -18,7 +18,7 @@ const BusinessDetails = () => {
         const Fetch = async () => {
             console.log(public_id)
             try {
-                const resp = await axios.get(`https://edutele-pay-backend.onrender.com/api/businesses/${public_id}`, {
+                const resp = await axios.get(`https://edutele-pay-backend.onrender.com/api/vendors/${public_id}`, {
                     headers: {
                         Authorization: authHeader(),
                     }
@@ -36,19 +36,19 @@ const BusinessDetails = () => {
 
     }, [public_id])
 
-    if (!item) return <div>Business not found</div>;
+    if (!item) return <div>Vendor not found</div>;
 
     return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
                 <NavBar />
-                <SectionHeader title="Business Details" />
+                <SectionHeader title="Vendor Details" />
                 <div className="p-10 w-full">
 
                     {/* Top Section */}
                     <div className="flex items-center justify-between px-6 border-b border-gray-200">
-                        <h2 className="text-lg font-semibold text-gray-800">{item.name} - {item.code}</h2>
+                        <h2 className="text-lg font-semibold text-gray-800">{item.name} - {item.vendor_code}</h2>
                         <p className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                             {item.status}
                         </p>
@@ -64,8 +64,8 @@ const BusinessDetails = () => {
                         <hr className="text-gray-200"/>
 
                         <div className="flex justify-between">
-                            <span className="text-gray-500">Phone</span>
-                            <span className="font-semibold">{item.phone}</span>
+                            <span className="text-gray-500">Type</span>
+                            <span className="font-semibold">{item.type}</span>
                         </div>
                         <hr className="text-gray-200"/>
 
@@ -83,12 +83,6 @@ const BusinessDetails = () => {
                         <div className="flex justify-between">
                             <span className="text-gray-500">Contact Phone</span>
                             <span className="font-semibold">{item.contact_phone}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Active</span>
-                            <span className="font-semibold">{item.is_active}</span>
                         </div>
                         <hr className="text-gray-200"/>
 
@@ -113,4 +107,4 @@ const BusinessDetails = () => {
     )
 }
 
-export default BusinessDetails
+export default VendorDetails

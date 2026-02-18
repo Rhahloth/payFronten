@@ -39,7 +39,7 @@ const Login = () =>{
             const role = resp.data.role 
             sessionStorage.setItem("role", role)
             setLoading(false)
-            navigate("/")
+            navigate("/customer-page")
 
         }catch(err){
             console.log("Error", err)

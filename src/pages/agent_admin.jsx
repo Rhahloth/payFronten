@@ -6,10 +6,14 @@ import Sidebar from "../Components/SideBar"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
+import { useNavigate } from "react-router-dom"
 
 
 
 const AgentAdmin = () => {
+    const [searchTerm, setSearchTerm] = useState(""); // input value
+    const [filteredItems, setFilteredItems] = useState([]); // filtered results
+    
 
     // {
     //   "public_id": "string",
@@ -25,6 +29,7 @@ const AgentAdmin = () => {
     //   "updated_at": "2025-12-23T12:08:25.086Z"
     // }
 
+    const navigate = useNavigate()
     // retreive data from /api/institutions
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
@@ -70,6 +75,13 @@ const AgentAdmin = () => {
     }, []);
 
     console.log("items", items)
+
+    useEffect(() => {
+        const filtered = items.filter((item) =>
+            item.username.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredItems(filtered);
+    }, [searchTerm, items]);
 
     //if (loading) return <p>Loading...</p>;
     //if (error) return <p>{error}</p>;
@@ -151,10 +163,19 @@ const AgentAdmin = () => {
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                <NavBar />
+                {/* <NavBar /> */}
                 <SectionHeader title="View All Accounts" />
                 <div className="ml-20">
                     <h2>Available Accounts <span className="ml-20 text-blue-700"> <Link to="/create-agent-admin">Create Account</Link></span></h2>
+                </div>
+                <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
                 <div className="p-10 w-full">
                     <table className=" bg-white mt-6 w-full">
@@ -175,15 +196,23 @@ const AgentAdmin = () => {
                             </div>
                         ) : (
                             <tbody>
-                                {items.map((institution) => (
-                                    <tr key={institution.public_id}>
+                                {filteredItems.map((institution) => (
+                                    <tr 
+                                        key={institution.public_id}
+                                        onClick={() => navigate(`/user-detail/${institution.public_id}`)}
+                                        className="cursor-pointer hover-bg-gray-100"
+                                    >
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.username}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.email}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.phone}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.role}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{institution.is_active}</td>
-                                        <td onClick={() => handleEditClick(institution)} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                        <td onClick={() => setDeleteItem(institution)} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleEditClick(institution)}} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
+                                        <td onClick={(e) => {
+                                            e.stopPropagation()
+                                            setDeleteItem(institution)}} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
                                     </tr>
                                 ))}
                             </tbody>
