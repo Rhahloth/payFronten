@@ -20,7 +20,7 @@ const Sidebar = () => {
             label: "Cards",
             path: "/cards",
             icon: FaAddressBook,
-            roles: ["super_user", "agent_user", "business_user"],
+            roles: ["super_user", "agent_user"],
         },
         {
             label: "Businesses",
@@ -32,16 +32,16 @@ const Sidebar = () => {
             label: "Vendors",
             path: "/vendors",
             icon: FaAccusoft,
-            roles: ["super_user", "agent_user", "business_user"],
+            roles: ["business_user"],
         },
         {
             label: "Customers",
             path: "/customer",
             icon: FaUserAlt,
-            roles: ["super_user", "agent_user", "business_user"],
+            roles: ["super_user", "agent_user"],
         },
         {
-            label: "Account Admin",
+            label: "Admin Accounts",
             path: "/agent-admin",
             icon: FaUser,
             roles: ["super_user"],

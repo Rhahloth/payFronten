@@ -168,7 +168,7 @@ const Business = () => {
                 {/* <NavBar /> */}
                 <SectionHeader title="View All Businesses" />
                 <div className="ml-20">
-                    <h2>Registered Businesses <span className="ml-20 text-blue-700"> <Link to="/signup-institution">Add a Business</Link></span></h2>
+                    <h2>Registered Businesses <span className="ml-20 text-blue-700"> <Link to="/signup-business">Add a Business</Link></span></h2>
                 </div>
                 <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
                     <input

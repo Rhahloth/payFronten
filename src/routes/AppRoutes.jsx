@@ -15,7 +15,6 @@ import AgentAdmin from "../pages/agent_admin";
 import CreateAgentAdmin from "../pages/agent_admin_create";
 import Logout from "../pages/logout";
 import CustomerLogin from "../pages/Customer_login";
-import CustomerSignup from "../pages/Customer_signup";
 import CustomerPage from "../pages/Customer_page";
 import ActivateAccount from "../pages/activate";
 import ResendToken from "../pages/resendToken";
@@ -23,11 +22,7 @@ import CardDetails from "../pages/card_details";
 import BusinessDetails from "../pages/business_details";
 import VendorDetails from "../pages/vendor_details";
 import UserDetails from "../pages/user_details";
-
-
-
-
-
+import CustomerSelfRegister from "../pages/CustomerSelfRegister";
 
 const AppRoutes = () => {
     return(
@@ -35,13 +30,13 @@ const AppRoutes = () => {
             {/* public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/customer-login" element={ <CustomerLogin /> } />
-            <Route path="/customer-signup" element={ <CustomerSignup /> } />
             <Route path="/activate" element={<ActivateAccount />} />
             <Route path="/resend_token" element={<ResendToken/>} />
+            <Route path="/register" element={<CustomerSelfRegister />} />
             {/* Protected routes  */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/signup-institution" element={<RegisterBusiness />} />
+                <Route path="/signup-business" element={<RegisterBusiness />} />
                 <Route path="/cards" element={<Cards />} />
                 <Route path="/create-card" element={<CreateCard />} />
                 <Route path="/business" element={ <Business /> } />

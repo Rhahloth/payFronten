@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import MainContent from "../Components/MainContent"
 import NavBar from "../Components/NavBar"
 import SectionHeader from "../Components/SectionHeader"
@@ -6,107 +6,67 @@ import Sidebar from "../Components/SideBar"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
-import { useNavigate } from "react-router-dom"
-
-
 
 const AgentAdmin = () => {
-    const [searchTerm, setSearchTerm] = useState(""); // input value
-    const [filteredItems, setFilteredItems] = useState([]); // filtered results
-    
-
-    // {
-    //   "public_id": "string",
-    //   "username": "string",
-    //   "email": "user@example.com",
-    //   "phone": "string",
-    //   "role": "super_admin",
-    //   "institution_public_id": "string",
-    //   "vendor_public_id": "string",
-    //   "is_active": true,
-    //   "is_verified": true,
-    //   "created_at": "2025-12-23T12:08:25.086Z",
-    //   "updated_at": "2025-12-23T12:08:25.086Z"
-    // }
+    const [searchTerm, setSearchTerm] = useState("")
+    const [filteredItems, setFilteredItems] = useState([])
 
     const navigate = useNavigate()
-    // retreive data from /api/institutions
-    const [items, setItems] = useState([]);
-    const [total, setTotal] = useState(0);
+
+    const [items, setItems] = useState([])
+    const [total, setTotal] = useState(0)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
 
-    // delete items
-    const [deleteItem, setDeleteItem] = useState(null); // null = closed
-    const [deleting, setDeleting] = useState(false);
-    // edit items
-    const [editingItem, setEditingItem] = useState(null); // null = no modal
+    const [deleteItem, setDeleteItem] = useState(null)
+    const [deleting, setDeleting] = useState(false)
+
+    const [editingItem, setEditingItem] = useState(null)
     const [formData, setFormData] = useState({
-        name: "",
-        code: "",
         email: "",
         phone: "",
-        location: "",
-        contact_person: "",
-        contact_phone: "",
-        type: "",
         status: "",
-        is_active: false,
-    });
+    })
 
-    // fetch data
     useEffect(() => {
         axios
             .get("https://edutele-pay-backend.onrender.com/api/users", {
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: authHeader()
-                }
+                    Authorization: authHeader(),
+                },
             })
             .then((response) => {
-                setItems(response.data.items)
-                setTotal(response.data.total)
+                setItems(response.data.items || [])
+                setTotal(response.data.total || 0)
                 setLoading(false)
             })
-            .catch((err) => {
+            .catch(() => {
                 setError("Failed to fetch data")
                 setLoading(false)
             })
-    }, []);
-
-    console.log("items", items)
+    }, [])
 
     useEffect(() => {
         const filtered = items.filter((item) =>
-            item.username.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredItems(filtered);
-    }, [searchTerm, items]);
-
-    //if (loading) return <p>Loading...</p>;
-    //if (error) return <p>{error}</p>;
+            (item.username || "").toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        setFilteredItems(filtered)
+    }, [searchTerm, items])
 
     const handleEditClick = (item) => {
-        setEditingItem(item);          // Open modal
-        setFormData({                  // Prefill form
-            name: item.name,
-            code: item.code,
-            email: item.email,
-            phone: item.phone,
-            location: item.location,
-            contact_person: item.contact_person,
-            contact_phone: item.contact_phone,
-            type: item.type,
-            status: item.status,
-            is_active: item.is_active,
-        });
-    };
-
+        setEditingItem(item)
+        setFormData({
+            email: item.email || "",
+            phone: item.phone || "",
+            status: item.status || "",
+        })
+    }
 
     const handleSave = async () => {
         try {
             await axios.put(
-                `https://edutele-pay-backend.onrender.com/api/institutions/${editingItem.public_id}`,
+                `https://edutele-pay-backend.onrender.com/api/users/${editingItem.public_id}`,
                 formData,
                 {
                     headers: {
@@ -114,50 +74,49 @@ const AgentAdmin = () => {
                         Authorization: authHeader(),
                     },
                 }
-            );
+            )
 
-            // Update local state
             setItems((prev) =>
                 prev.map((item) =>
-                    item.public_id === editingItem.public_id ? { ...item, ...formData } : item
+                    item.public_id === editingItem.public_id
+                        ? { ...item, ...formData }
+                        : item
                 )
-            );
-            alert("Updated succesfully")
+            )
 
-            setEditingItem(null); // Close modal
+            alert("Updated successfully")
+            setEditingItem(null)
         } catch (err) {
-            console.error("Failed to update", err);
+            console.error("Failed to update", err)
         }
-    };
-
+    }
 
     const handleDelete = async () => {
-        if (!deleteItem) return;
+        if (!deleteItem) return
 
-        setDeleting(true);
+        setDeleting(true)
 
         try {
             await axios.delete(
-                `https://edutele-pay-backend.onrender.com/api/institutions/${deleteItem.public_id}`,
+                `https://edutele-pay-backend.onrender.com/api/users/${deleteItem.public_id}`,
                 {
                     headers: {
                         Authorization: authHeader(),
                     },
                 }
-            );
+            )
 
-            // Remove item from table immediately
             setItems((prev) =>
                 prev.filter((item) => item.public_id !== deleteItem.public_id)
-            );
+            )
 
-            setDeleteItem(null);
+            setDeleteItem(null)
         } catch (err) {
-            console.error("Delete failed", err);
+            console.error("Delete failed", err)
         } finally {
-            setDeleting(false);
+            setDeleting(false)
         }
-    };
+    }
 
     return (
         <div className="w-full">
@@ -165,75 +124,100 @@ const AgentAdmin = () => {
             <MainContent>
                 {/* <NavBar /> */}
                 <SectionHeader title="View All Accounts" />
+
                 <div className="ml-20">
-                    <h2>Available Accounts <span className="ml-20 text-blue-700"> <Link to="/create-agent-admin">Create Account</Link></span></h2>
+                    <h2>
+                        Available Accounts ({total})
+                        <span className="ml-20 text-blue-700">
+                            <Link to="/create-agent-admin">Create Account</Link>
+                        </span>
+                    </h2>
                 </div>
+
                 <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
                     <input
                         type="text"
-                        placeholder="Search..."
+                        placeholder="Search by username..."
                         className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
+
+                {error && (
+                    <div className="px-10 pt-4 text-red-600">{error}</div>
+                )}
+
                 <div className="p-10 w-full">
-                    <table className=" bg-white mt-6 w-full">
+                    <table className="bg-white mt-6 w-full">
                         <thead>
                             <tr>
                                 <th className="py-2 px-4 border-b border-gray-200">Username</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Email</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Phone</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Role</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Active</th>
+                                <th className="py-2 px-4 border-b border-gray-200">Status</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Edit</th>
                                 <th className="py-2 px-4 border-b border-gray-200">Delete</th>
                             </tr>
                         </thead>
+
                         {loading ? (
-                            <div className="w-full border p-2 rounded flex items-center justify-center">
-                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-                            </div>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="7" className="p-4">
+                                        <div className="w-full border p-2 rounded flex items-center justify-center">
+                                            <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         ) : (
                             <tbody>
-                                {filteredItems.map((institution) => (
-                                    <tr 
-                                        key={institution.public_id}
-                                        onClick={() => navigate(`/user-detail/${institution.public_id}`)}
-                                        className="cursor-pointer hover-bg-gray-100"
+                                {filteredItems.map((user) => (
+                                    <tr
+                                        key={user.public_id}
+                                        onClick={() => navigate(`/user-detail/${user.public_id}`)}
+                                        className="cursor-pointer hover:bg-gray-100"
                                     >
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.username}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.email}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.phone}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.role}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.is_active}</td>
-                                        <td onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleEditClick(institution)}} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                        <td onClick={(e) => {
-                                            e.stopPropagation()
-                                            setDeleteItem(institution)}} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{user.username}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{user.email}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{user.phone}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{user.role}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{user.status}</td>
+
+                                        <td
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleEditClick(user)
+                                            }}
+                                            className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer"
+                                        >
+                                            Edit
+                                        </td>
+
+                                        <td
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setDeleteItem(user)
+                                            }}
+                                            className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer"
+                                        >
+                                            Delete
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         )}
                     </table>
                 </div>
+
                 {editingItem && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                         <div className="bg-white p-6 rounded-lg w-180">
-                            <h2 className="text-lg font-bold mb-4">Edit {editingItem.name}</h2>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Name"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
-                            </div>
+                            <h2 className="text-lg font-bold mb-4">
+                                Edit {editingItem.username}
+                            </h2>
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
@@ -258,47 +242,21 @@ const AgentAdmin = () => {
                             </div>
 
                             <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
-                                <input
-                                    type="text"
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Status</label>
+                                <select
                                     className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Location"
-                                    value={formData.location}
-                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                />
+                                    value={formData.status}
+                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                >
+                                    <option value="">Select status</option>
+                                    <option value="pending">pending</option>
+                                    <option value="active">active</option>
+                                    <option value="inactive">inactive</option>
+                                    <option value="suspended">suspended</option>
+                                    <option value="blocked">blocked</option>
+                                    <option value="deleted">deleted</option>
+                                </select>
                             </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Contact Person"
-                                    value={formData.contact_person}
-                                    onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })} />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Contact Phone"
-                                    value={formData.contact_phone}
-                                    onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })} />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Type</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Type"
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                />
-                            </div>
-                            {/* Add other fields in the same way */}
 
                             <div className="flex justify-end mt-4">
                                 <button
@@ -327,7 +285,7 @@ const AgentAdmin = () => {
 
                             <p className="mb-4">
                                 Are you sure you want to delete{" "}
-                                <strong>{deleteItem.name}</strong>?
+                                <strong>{deleteItem.username}</strong>?
                                 This action cannot be undone.
                             </p>
 
@@ -351,7 +309,6 @@ const AgentAdmin = () => {
                         </div>
                     </div>
                 )}
-
             </MainContent>
         </div>
     )
