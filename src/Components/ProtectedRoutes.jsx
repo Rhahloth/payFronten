@@ -1,11 +1,22 @@
-import {Navigate, Outlet} from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom"
 
-const isAuthenticated = () => {
-    return !!sessionStorage.getItem("token");
+const isAuthenticated = () => !!sessionStorage.getItem("token")
+const getRole = () => sessionStorage.getItem("role")
+
+const ADMIN_ROLES = ["super_user", "agent_user", "business_user", "vendor"]
+
+// ── Admin-only routes ─────────────────────────────────────────
+export const ProtectedRoute = () => {
+    if (!isAuthenticated()) return <Navigate to="/login" replace />
+    if (!ADMIN_ROLES.includes(getRole())) return <Navigate to="/customer-page" replace />
+    return <Outlet />
 }
 
-const ProtectedRoute = () =>{
-    return isAuthenticated() ? <Outlet /> : <Navigate to='/login' replace />
+// ── Customer-only routes ──────────────────────────────────────
+export const CustomerRoute = () => {
+    if (!isAuthenticated()) return <Navigate to="/login" replace />
+    if (ADMIN_ROLES.includes(getRole())) return <Navigate to="/" replace />
+    return <Outlet />
 }
 
 export default ProtectedRoute

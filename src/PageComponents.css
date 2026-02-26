@@ -1,0 +1,1102 @@
+/* ============================================================
+   PageComponents.css
+   Central stylesheet for all reusable UI components.
+   Solid colors only — no gradients anywhere.
+   ============================================================ */
+
+/* ============================================================
+   SECTION 1 — DESIGN TOKENS
+   ============================================================ */
+:root {
+    /* Brand */
+    --color-primary: #1a56db;
+    --color-primary-dark: #1446b8;
+    --color-primary-light: #dbeafe;
+    --color-primary-bg: #f0f5ff;
+
+    /* Neutrals */
+    --color-white: #ffffff;
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f1f5f9;
+    --color-gray-200: #e2e8f0;
+    --color-gray-300: #cbd5e1;
+    --color-gray-400: #94a3b8;
+    --color-gray-500: #64748b;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1e293b;
+    --color-gray-900: #0f2d5c;
+
+    /* Semantic */
+    --color-success: #059669;
+    --color-success-bg: #dcfce7;
+    --color-success-border: #bbf7d0;
+    --color-success-light: #f0fdf4;
+
+    --color-warning: #854d0e;
+    --color-warning-bg: #fef9c3;
+    --color-warning-border: #fef08a;
+    --color-warning-light: #fefce8;
+
+    --color-danger: #ef4444;
+    --color-danger-dark: #dc2626;
+    --color-danger-bg: #fef2f2;
+    --color-danger-border: #fecaca;
+    --color-danger-light: #feeaea;
+
+    --color-pending: #854d0e;
+    --color-pending-bg: #fef9c3;
+    --color-pending-border: #fef08a;
+
+    --color-inactive-text: #64748b;
+    --color-inactive-bg: #f1f5f9;
+    --color-inactive-border: #e2e8f0;
+
+    /* Text roles */
+    --text-heading: var(--color-gray-900);
+    --text-body: var(--color-gray-800);
+    --text-muted: var(--color-gray-500);
+    --text-subtle: var(--color-gray-400);
+
+    /* Borders */
+    --border-default: var(--color-gray-200);
+    --border-subtle: #f1f5f9;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(15, 45, 92, 0.07), 0 4px 16px rgba(15, 45, 92, 0.05);
+    --shadow-md: 0 4px 12px rgba(15, 45, 92, 0.04);
+    --shadow-lg: 0 20px 60px rgba(15, 45, 92, 0.25);
+    --shadow-primary: 0 8px 16px rgba(26, 86, 219, 0.25);
+    --shadow-focus: 0 0 0 3px rgba(26, 86, 219, 0.12);
+
+    /* Border radii */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.2s ease;
+    --transition-slow: 0.3s ease;
+
+    /* Sidebar */
+    --sidebar-bg: #1f2937;
+    --sidebar-text: #ffffff;
+    --sidebar-muted: #4b5563;
+    --sidebar-hover: #6b7280;
+}
+
+
+/* ============================================================
+   SECTION 2 — TOOLBAR
+   Top action bar with search input and add button.
+   ============================================================ */
+.page-toolbar {
+    border-bottom: 1px solid var(--border-default);
+    background: var(--color-white);
+}
+
+.page-search-input {
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: var(--text-body);
+    outline: none;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.page-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
+}
+
+.page-add-btn {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background var(--transition-base);
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+.page-add-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+
+/* ============================================================
+   SECTION 3 — TABLE
+   Wrapper, header row, body rows, primary cell.
+   ============================================================ */
+.page-table-wrapper {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    margin-top: 16px;
+}
+
+.page-thead-row {
+    background-color: var(--color-gray-50);
+    border-bottom: 2px solid var(--border-default);
+}
+
+.page-thead-row th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.page-tbody-row {
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background var(--transition-fast);
+    font-size: 14px;
+    color: var(--text-body);
+}
+
+.page-tbody-row:last-child {
+    border-bottom: none;
+}
+
+.page-tbody-row:hover {
+    background-color: var(--color-primary-bg);
+}
+
+.page-td-primary {
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+
+/* ============================================================
+   SECTION 4 — BADGES
+   Status pills: active, inactive, pending.
+   ============================================================ */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-active {
+    background: var(--color-success-bg);
+    color: #166534;
+    border: 1px solid var(--color-success-border);
+}
+
+.badge-inactive {
+    background: var(--color-inactive-bg);
+    color: var(--color-inactive-text);
+    border: 1px solid var(--color-inactive-border);
+}
+
+.badge-pending {
+    background: var(--color-pending-bg);
+    color: var(--color-pending);
+    border: 1px solid var(--color-pending-border);
+}
+
+
+/* ============================================================
+   SECTION 5 — ROW ACTION BUTTONS
+   Inline edit and delete buttons on table rows.
+   ============================================================ */
+.page-btn-edit {
+    border: 1.5px solid var(--color-primary);
+    color: var(--color-primary);
+    background: none;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.page-btn-edit:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.page-btn-delete {
+    border: 1.5px solid var(--color-danger);
+    color: var(--color-danger);
+    background: none;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.page-btn-delete:hover {
+    background: var(--color-danger);
+    color: var(--color-white);
+}
+
+
+/* ============================================================
+   SECTION 6 — ERROR STATE
+   Inline field-level or page-level error text.
+   ============================================================ */
+.page-error {
+    font-size: 14px;
+    color: var(--color-danger);
+}
+
+
+/* ============================================================
+   SECTION 7 — MODAL
+   Overlay, box, title, body, close button, danger variant.
+   ============================================================ */
+.page-modal-overlay {
+    background: rgba(15, 45, 92, 0.45);
+    backdrop-filter: blur(4px);
+}
+
+.page-modal {
+    background: var(--color-white);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-lg);
+}
+
+.page-modal-danger {
+    border-color: var(--color-danger-border);
+}
+
+.page-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+
+.page-modal-body {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.page-modal-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.page-modal-close:hover {
+    color: var(--text-heading);
+}
+
+.page-danger-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: var(--color-danger-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+
+/* ============================================================
+   SECTION 8 — FORM FIELDS
+   Labels and inputs used inside modals and create/edit pages.
+   ============================================================ */
+.page-form-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.page-form-input {
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: var(--text-body);
+    outline: none;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.page-form-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
+}
+
+.input-error {
+    border-color: var(--color-danger) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+
+/* ============================================================
+   SECTION 9 — MODAL BUTTONS
+   Cancel, save, and danger confirm buttons inside modals.
+   ============================================================ */
+.page-btn-cancel {
+    border: 1.5px solid var(--border-default);
+    background: var(--color-white);
+    color: var(--text-muted);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--transition-base), color var(--transition-base);
+}
+
+.page-btn-cancel:hover {
+    border-color: var(--color-gray-300);
+    color: var(--text-body);
+}
+
+.page-btn-save {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition-base);
+}
+
+.page-btn-save:hover {
+    background: var(--color-primary-dark);
+}
+
+.page-btn-danger {
+    background: var(--color-danger);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity var(--transition-base);
+}
+
+.page-btn-danger:hover {
+    opacity: 0.88;
+}
+
+.page-btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ============================================================
+   SECTION 10 — FORM CONTAINER
+   Card wrapper for standalone create / edit pages.
+   ============================================================ */
+.page-form-container {
+    background: var(--color-white);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+}
+
+.page-hint {
+    color: var(--text-muted);
+}
+
+.page-hint-value {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.page-warning {
+    color: var(--color-danger);
+}
+
+
+/* ============================================================
+   SECTION 11 — DETAIL VIEW
+   Card layout for record detail / view pages.
+   ============================================================ */
+.page-detail-wrapper {
+    background: var(--color-white);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.page-detail-header {
+    background: var(--color-gray-900);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.page-detail-primary {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: 0.03em;
+}
+
+.page-detail-action-btn {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition-base);
+}
+
+.page-detail-action-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+.page-detail-row {
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.page-detail-row:last-child {
+    border-bottom: none;
+}
+
+.page-detail-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.page-detail-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+
+/* ============================================================
+   SECTION 12 — NAVIGATION BUTTONS
+   Back and dashboard shortcut buttons in page headers.
+   ============================================================ */
+.page-back-btn,
+.page-dashboard-btn {
+    background: none;
+    border: 1.5px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.page-back-btn:hover {
+    background-color: var(--color-gray-50);
+    border-color: var(--border-default);
+    color: var(--text-heading);
+    transform: translateX(-2px);
+}
+
+.page-back-btn:active {
+    transform: translateX(0);
+}
+
+.page-dashboard-btn:hover {
+    background-color: var(--color-gray-50);
+    border-color: var(--border-default);
+    color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.page-dashboard-btn:active {
+    transform: translateY(0);
+}
+
+.page-back-btn span:first-child,
+.page-dashboard-btn span:first-child {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.page-back-btn span:last-child,
+.page-dashboard-btn span:last-child {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* ============================================================
+   SECTION 13 — PAGE HEADER
+   Top section header bar with title.
+   ============================================================ */
+.page-header {
+    background: var(--color-white);
+    border-bottom: 2px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+}
+
+.page-header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: -0.02em;
+    padding-right: 16px;
+}
+
+
+/* ============================================================
+   SECTION 14 — DASHBOARD DATA CARDS
+   Large stat cards at the top of the homepage.
+   ============================================================ */
+.home-card {
+    background: var(--color-white);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-2xl);
+    padding: 24px;
+    min-width: 240px;
+    flex: 1;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.home-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-primary);
+    border-color: var(--color-primary-light);
+}
+
+.home-card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-xl);
+    background: var(--color-primary);
+    color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.home-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.home-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.home-card-change {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.home-card-change.negative {
+    background: var(--color-danger-light);
+    color: var(--color-danger-dark);
+}
+
+.home-card-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.home-card-sub {
+    font-size: 13px;
+    color: var(--text-subtle);
+}
+
+
+/* ============================================================
+   SECTION 15 — DASHBOARD MINI STAT CARDS
+   Smaller quick-stat cards below the main data cards.
+   ============================================================ */
+.home-mini-card {
+    background: var(--color-white);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.home-mini-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
+}
+
+.home-mini-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-bg);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.home-mini-card-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-top: 8px;
+}
+
+.home-mini-card-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+
+/* ============================================================
+   SECTION 16 — DASHBOARD QUICK ACTION BUTTONS
+   2×2 grid of shortcut buttons on the homepage sidebar.
+   ============================================================ */
+.home-quick-action-btn {
+    background: var(--color-white);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-body);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.home-quick-action-btn:hover {
+    background: var(--color-primary-bg);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.home-quick-action-btn span:first-child {
+    font-size: 20px;
+}
+
+
+/* ============================================================
+   SECTION 17 — SIDEBAR
+   Nav sidebar: tooltips, active link, scrollbar styling.
+   ============================================================ */
+.sidebar-tooltip {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    margin-left: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+    z-index: 50;
+}
+
+.sidebar-item:hover .sidebar-tooltip {
+    opacity: 1;
+}
+
+.sidebar-link-active {
+    background: var(--color-primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.sidebar-nav,
+.sidebar-scrollbar {
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sidebar-muted) var(--sidebar-bg);
+}
+
+.sidebar-nav::-webkit-scrollbar,
+.sidebar-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track,
+.sidebar-scrollbar::-webkit-scrollbar-track {
+    background: var(--sidebar-bg);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb,
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--sidebar-muted);
+    border-radius: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover,
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--sidebar-hover);
+}
+
+@keyframes tooltipFade {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.group:hover .tooltip {
+    animation: tooltipFade 0.2s ease-out forwards;
+}
+
+
+/* ============================================================
+   SECTION 18 — AUTH PAGES
+   Login, Register, Activate, ResendToken shared styles.
+   Tailwind handles layout; these handle component details.
+   ============================================================ */
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+.auth-page-wrapper {
+    min-height: 100vh;
+    background-color: var(--color-gray-50);
+}
+
+.auth-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-gray-600);
+    margin-bottom: 2rem;
+    transition: color var(--transition-base);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.auth-back-link:hover {
+    color: var(--color-primary);
+}
+
+.auth-card {
+    background: var(--color-white);
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+        0 8px 10px -6px rgb(0 0 0 / 0.1);
+    overflow: hidden;
+}
+
+.auth-left-panel {
+    background: var(--color-primary);
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    height: 100%;
+}
+
+.auth-left-panel h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.auth-left-panel p {
+    color: var(--color-primary-light);
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.auth-left-panel img {
+    width: 16rem;
+    height: 16rem;
+    object-fit: contain;
+    margin-bottom: 2rem;
+}
+
+.auth-right-panel {
+    padding: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .auth-right-panel {
+        padding: 3rem;
+    }
+}
+
+.auth-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    background-color: var(--color-primary-light);
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+    font-size: 1.5rem;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: var(--color-gray-600);
+    font-size: 0.9rem;
+}
+
+.auth-input-wrapper {
+    position: relative;
+}
+
+.auth-input-wrapper .auth-input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-subtle);
+    pointer-events: none;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    outline: none;
+    font-size: 0.875rem;
+    transition: box-shadow var(--transition-base), border-color var(--transition-base);
+    background-color: var(--color-white);
+}
+
+.auth-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus);
+}
+
+.auth-input.input-error {
+    border-color: var(--color-danger-border);
+    background-color: var(--color-danger-bg);
+}
+
+.auth-input.input-success {
+    border-color: var(--color-success-border);
+    background-color: var(--color-success-light);
+}
+
+.auth-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.auth-btn {
+    width: 100%;
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.auth-btn:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-primary);
+}
+
+.auth-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.auth-alert {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.auth-alert-error {
+    background-color: var(--color-danger-bg);
+    border: 1px solid var(--color-danger-border);
+    color: var(--color-danger-dark);
+}
+
+.auth-alert-success {
+    background-color: var(--color-success-light);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success);
+}
+
+.auth-alert-warning {
+    background-color: var(--color-warning-light);
+    border: 1px solid var(--color-warning-border);
+    color: var(--color-warning);
+}
+
+.auth-spinner-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: var(--color-gray-600);
+    font-size: 0.875rem;
+}
+
+.auth-spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--color-gray-200);
+    border-top-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    animation: spin 0.7s linear infinite;
+}
+
+.auth-strength-bar-track {
+    flex: 1;
+    height: 0.5rem;
+    background-color: var(--color-gray-200);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.auth-strength-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow), background-color var(--transition-slow);
+}
+
+.auth-strength-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-gray-600);
+}
+
+.auth-strength-hint {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    margin-top: 0.25rem;
+}
+
+.auth-footer-links {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.auth-footer-links p {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    margin-bottom: 0.5rem;
+}
+
+.auth-link {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--transition-base);
+}
+
+.auth-link:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+.auth-page-footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.875rem;
+    color: var(--color-gray-500);
+}
+
+
+/* ============================================================
+   SECTION 19 — RESPONSIVE HELPERS
+   ============================================================ */
+@media (max-width: 768px) {
+    .home-card {
+        min-width: 100%;
+    }
+}

@@ -7,42 +7,19 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
 import { useNavigate } from "react-router-dom"
-
-
+import '../PageComponents.css'
 
 const Business = () => {
-
-    //     {
-    //   "public_id": "string",
-    //   "name": "string",
-    //   "type": "school",
-    //   "code": "string",
-    //   "email": "user@example.com",
-    //   "phone": "string",
-    //   "location": "string",
-    //   "contact_person": "string",
-    //   "contact_phone": "string",
-    //   "status": "pending",
-    //   "is_active": true,
-    //   "created_at": "2025-12-21T09:48:33.143Z",
-    //   "updated_at": "2025-12-21T09:48:33.143Z"
-    // }
-
     const navigate = useNavigate()
-    const [searchTerm, setSearchTerm] = useState(""); // input value
-    const [filteredItems, setFilteredItems] = useState([]); // filtered results
-
-
-    // retreive data from /api/business
-    const [items, setItems] = useState([]);
-    const [total, setTotal] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("")
+    const [filteredItems, setFilteredItems] = useState([])
+    const [items, setItems] = useState([])
+    const [total, setTotal] = useState(0)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
-    // delete items
-    const [deleteItem, setDeleteItem] = useState(null); // null = closed
-    const [deleting, setDeleting] = useState(false);
-    // edit items
-    const [editingItem, setEditingItem] = useState(null); // null = no modal
+    const [deleteItem, setDeleteItem] = useState(null)
+    const [deleting, setDeleting] = useState(false)
+    const [editingItem, setEditingItem] = useState(null)
     const [formData, setFormData] = useState({
         name: "",
         code: "",
@@ -54,7 +31,7 @@ const Business = () => {
         type: "",
         status: "",
         is_active: false,
-    });
+    })
 
     // fetch data
     useEffect(() => {
@@ -74,23 +51,18 @@ const Business = () => {
                 setError("Failed to fetch data")
                 setLoading(false)
             })
-    }, []);
-
-    console.log("items", items)
+    }, [])
 
     useEffect(() => {
         const filtered = items.filter((item) =>
             item.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredItems(filtered);
-    }, [searchTerm, items]);
-
-    // if (loading) return <p>Loading...</p>;
-    // if (error) return <p>{error}</p>;
+        )
+        setFilteredItems(filtered)
+    }, [searchTerm, items])
 
     const handleEditClick = (item) => {
-        setEditingItem(item);          // Open modal
-        setFormData({                  // Prefill form
+        setEditingItem(item)
+        setFormData({
             name: item.name,
             code: item.code,
             email: item.email,
@@ -101,9 +73,8 @@ const Business = () => {
             type: item.type,
             status: item.status,
             is_active: item.is_active,
-        });
-    };
-
+        })
+    }
 
     const handleSave = async () => {
         try {
@@ -116,27 +87,24 @@ const Business = () => {
                         Authorization: authHeader(),
                     },
                 }
-            );
+            )
 
-            // Update local state
             setItems((prev) =>
                 prev.map((item) =>
                     item.public_id === editingItem.public_id ? { ...item, ...formData } : item
                 )
-            );
-            alert("Updated succesfully")
-
-            setEditingItem(null); // Close modal
+            )
+            alert("Updated successfully")
+            setEditingItem(null)
         } catch (err) {
-            console.error("Failed to update", err);
+            console.error("Failed to update", err)
         }
-    };
-
+    }
 
     const handleDelete = async () => {
-        if (!deleteItem) return;
+        if (!deleteItem) return
 
-        setDeleting(true);
+        setDeleting(true)
 
         try {
             await axios.delete(
@@ -146,213 +114,215 @@ const Business = () => {
                         Authorization: authHeader(),
                     },
                 }
-            );
+            )
 
-            // Remove item from table immediately
             setItems((prev) =>
                 prev.filter((item) => item.public_id !== deleteItem.public_id)
-            );
+            )
 
-            setDeleteItem(null);
+            setDeleteItem(null)
         } catch (err) {
-            console.error("Delete failed", err);
+            console.error("Delete failed", err)
         } finally {
-            setDeleting(false);
+            setDeleting(false)
         }
-    };
+    }
+
+    const statusClass = (status) => {
+        if (!status) return "badge badge-inactive"
+        const s = status.toLowerCase()
+        if (s === "active") return "badge badge-active"
+        if (s === "inactive") return "badge badge-inactive"
+        return "badge badge-pending"
+    }
+
+    const fields = [
+        { key: "name", label: "Name" },
+        { key: "code", label: "Code" },
+        { key: "email", label: "Email" },
+        { key: "phone", label: "Phone" },
+        { key: "location", label: "Location" },
+        { key: "contact_person", label: "Contact Person" },
+        { key: "contact_phone", label: "Contact Phone" },
+        { key: "type", label: "Type" },
+        { key: "status", label: "Status" },
+    ]
 
     return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                {/* <NavBar /> */}
-                <SectionHeader title="View All Businesses" />
-                <div className="ml-20">
-                    <h2>Registered Businesses <span className="ml-20 text-blue-700"> <Link to="/signup-business">Add a Business</Link></span></h2>
-                </div>
-                <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
+                <SectionHeader title="Manage Businesses" showDashboard={true} />
+
+                {/* ── Toolbar with Search and Add Button ── */}
+                <div className="flex items-center justify-between px-8 py-4 page-toolbar">
                     <input
                         type="text"
-                        placeholder="Search..."
-                        className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Search by business name..."
+                        className="w-full md:w-72 px-4 py-2 page-search-input"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    <Link to="/signup-business" className="page-add-btn ml-4 px-5 py-2 whitespace-nowrap">
+                        + Add Business
+                    </Link>
                 </div>
-                <div className="p-10 w-full">
-                    <table className=" bg-white mt-6 w-full">
-                        <thead>
-                            <tr>
-                                <th className="py-2 px-4 border-b border-gray-200">Code</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Name</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Email</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Phone</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Location</th> 
-                                <th className="py-2 px-4 border-b border-gray-200">Type</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Status</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Edit</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Delete</th>
-                            </tr>
-                        </thead>
+
+                {/* ── Table ── */}
+                <div className="px-8 pb-10">
+                    <div className="w-full overflow-x-auto page-table-wrapper">
                         {loading ? (
-                            <div className="w-full border p-2 rounded flex items-center justify-center">
-                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                            <div className="flex items-center justify-center py-16">
+                                <div className="h-6 w-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+                            </div>
+                        ) : error ? (
+                            <div className="flex items-center justify-center py-16 page-error">
+                                {error}
                             </div>
                         ) : (
-                            <tbody>
-                                {filteredItems.map((institution) => (
-                                    <tr 
-                                    
-                                        key={institution.public_id}
-                                        onClick={() => {navigate(`/business-detail/${institution.public_id}`)}}
-                                        className="cursor-pointer hover-bg-gray-100"
-                                    >
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.code}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.name}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.email}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.phone}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.location}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.type}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{institution.status}</td>
-                                        <td onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleEditClick(institution)
-                                            }} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                        <td onClick={(e) => {
-                                            e.stopPropagation()
-                                            setDeleteItem(institution)
-                                            }} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="page-thead-row">
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Code</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Name</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Email</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Phone</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Location</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Type</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Status</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Edit</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Delete</th>
                                     </tr>
-                                ))}
-                            </tbody>
+                                </thead>
+                                <tbody>
+                                    {filteredItems.map((institution) => (
+                                        <tr
+                                            key={institution.public_id}
+                                            onClick={() => { navigate(`/business-detail/${institution.public_id}`) }}
+                                            className="page-tbody-row cursor-pointer"
+                                        >
+                                            <td className="px-4 py-3 page-td-primary">{institution.code}</td>
+                                            <td className="px-4 py-3">{institution.name}</td>
+                                            <td className="px-4 py-3">{institution.email}</td>
+                                            <td className="px-4 py-3">{institution.phone}</td>
+                                            <td className="px-4 py-3">{institution.location}</td>
+                                            <td className="px-4 py-3">{institution.type}</td>
+                                            <td className="px-4 py-3">
+                                                <span className={statusClass(institution.status)}>
+                                                    {institution.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <button
+                                                    className="page-btn-edit px-3 py-1"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleEditClick(institution)
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <button
+                                                    className="page-btn-delete px-3 py-1"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setDeleteItem(institution)
+                                                    }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         )}
-                    </table>
+                    </div>
                 </div>
+
+                {/* ── Edit Modal ── */}
                 {editingItem && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded-lg w-180 max-h-[90vh] overflow-y-auto">
-                            <h2 className="text-lg font-bold mb-4">Edit {editingItem.name}</h2>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Name"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 page-modal-overlay">
+                        <div className="w-full max-w-md max-h-[90vh] overflow-y-auto p-8 page-modal">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="page-modal-title">Edit {editingItem.name}</h2>
+                                <button className="page-modal-close" onClick={() => setEditingItem(null)}>✕</button>
                             </div>
 
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Email"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                />
-                            </div>
+                            {fields.map(({ key, label }) => (
+                                <div key={key} className="mb-4">
+                                    <label className="block mb-1 page-form-label">{label}</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-3 py-2 page-form-input"
+                                        placeholder={label}
+                                        value={formData[key] || ""}
+                                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                                    />
+                                </div>
+                            ))}
 
                             <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Phone"
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                />
+                                <label className="block mb-1 page-form-label">Active Status</label>
+                                <div className="flex items-center gap-4">
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="is_active"
+                                            checked={formData.is_active === true}
+                                            onChange={() => setFormData({ ...formData, is_active: true })}
+                                        />
+                                        <span className="text-sm">Active</span>
+                                    </label>
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="is_active"
+                                            checked={formData.is_active === false}
+                                            onChange={() => setFormData({ ...formData, is_active: false })}
+                                        />
+                                        <span className="text-sm">Inactive</span>
+                                    </label>
+                                </div>
                             </div>
 
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Location"
-                                    value={formData.location}
-                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Contact Person"
-                                    value={formData.contact_person}
-                                    onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })} />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Contact Phone"
-                                    value={formData.contact_phone}
-                                    onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })} />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Type</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Type"
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                />
-                            </div>
-                            {/* Add other fields in the same way */}
-
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    className="bg-gray-300 px-4 py-2 rounded mr-2"
-                                    onClick={() => setEditingItem(null)}
-                                >
+                            <div className="flex justify-end gap-3 mt-6">
+                                <button className="px-5 py-2 page-btn-cancel" onClick={() => setEditingItem(null)}>
                                     Cancel
                                 </button>
-                                <button
-                                    className="bg-blue-600 text-white px-4 py-2 rounded"
-                                    onClick={handleSave}
-                                >
-                                    Save
+                                <button className="px-5 py-2 page-btn-save" onClick={handleSave}>
+                                    Save Changes
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
+                {/* ── Delete Modal ── */}
                 {deleteItem && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 w-96">
-                            <h2 className="text-lg font-semibold mb-3 text-red-600">
-                                Confirm Delete
-                            </h2>
-
-                            <p className="mb-4">
-                                Are you sure you want to delete{" "}
-                                <strong>{deleteItem.name}</strong>?
-                                This action cannot be undone.
+                    <div className="fixed inset-0 flex items-center justify-center z-50 page-modal-overlay">
+                        <div className="w-full max-w-sm p-8 page-modal page-modal-danger">
+                            <div className="page-danger-icon mb-4">
+                                <span>🗑</span>
+                            </div>
+                            <h2 className="page-modal-title mb-2">Confirm Delete</h2>
+                            <p className="page-modal-body mb-6">
+                                Are you sure you want to delete <strong>{deleteItem.name}</strong>? This action cannot be undone.
                             </p>
-
-                            <div className="flex justify-end gap-2">
+                            <div className="flex justify-end gap-3">
                                 <button
-                                    className="px-4 py-2 rounded bg-gray-300"
+                                    className="px-5 py-2 page-btn-cancel"
                                     onClick={() => setDeleteItem(null)}
                                     disabled={deleting}
                                 >
                                     Cancel
                                 </button>
-
                                 <button
-                                    className="px-4 py-2 rounded bg-red-600 text-white"
-                                    disabled={deleting}
+                                    className="px-5 py-2 page-btn-danger"
                                     onClick={handleDelete}
+                                    disabled={deleting}
                                 >
                                     {deleting ? "Deleting..." : "Delete"}
                                 </button>

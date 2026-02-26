@@ -1,325 +1,254 @@
 import { Link } from "react-router-dom"
 import SectionHeader from "../Components/SectionHeader"
-import Navbar from "../Components/NavBar"
-import { FaPlus } from "react-icons/fa"
 import Sidebar from "../Components/SideBar"
 import MainContent from "../Components/MainContent"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
 import { useNavigate } from "react-router-dom"
-
+import '../PageComponents.css'
 
 const Cards = () => {
 
-
     const navigate = useNavigate()
-    const [searchTerm, setSearchTerm] = useState(""); // input value
-    const [filteredItems, setFilteredItems] = useState([]); // filtered results
-
-    // retreive data from /api/institutions
-    const [items, setItems] = useState([]);
-    const [total, setTotal] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("")
+    const [filteredItems, setFilteredItems] = useState([])
+    const [items, setItems] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
-
-    // delete items
-    const [deleteItem, setDeleteItem] = useState(null); // null = closed
-    const [deleting, setDeleting] = useState(false);
-    // edit items
-    const [editingItem, setEditingItem] = useState(null); // null = no modal
+    const [deleteItem, setDeleteItem] = useState(null)
+    const [deleting, setDeleting] = useState(false)
+    const [editingItem, setEditingItem] = useState(null)
     const [formData, setFormData] = useState({
-        card_number: "",
-    });
+        card_number: "", name: "", type: "", email: "",
+        location: "", contact_person: "", contact_phone: "", status: "",
+    })
 
-    // fetch data
     useEffect(() => {
         axios
             .get("https://edutele-pay-backend.onrender.com/api/cards", {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: authHeader()
-                }
+                headers: { "Content-Type": "application/json", Authorization: authHeader() }
             })
             .then((response) => {
                 setItems(response.data.items)
-                setTotal(response.data.total)
                 setLoading(false)
             })
-            .catch((err) => {
+            .catch(() => {
                 setError("Failed to fetch data")
                 setLoading(false)
             })
-    }, []);
-
-    console.log("items", items)
+    }, [])
 
     useEffect(() => {
         const filtered = items.filter((item) =>
             item.card_number.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredItems(filtered);
-    }, [searchTerm, items]);
+        )
+        setFilteredItems(filtered)
+    }, [searchTerm, items])
 
     const handleEditClick = (item) => {
-        setEditingItem(item);          // Open modal
-        setFormData({                  // Prefill form
-            name: item.name,
-            type: item.type,
-            email: item.email,
-            location: item.location,
-            contact_person: item.contact_person,
-            contact_phone: item.contact_phone,
-            status: item.status,
-        });
-    };
+        setEditingItem(item)
+        setFormData({
+            name: item.name, type: item.type, email: item.email,
+            location: item.location, contact_person: item.contact_person,
+            contact_phone: item.contact_phone, status: item.status,
+        })
+    }
 
     const handleSave = async () => {
         try {
             await axios.put(
                 `https://edutele-pay-backend.onrender.com/api/cards/${editingItem.card_uid}`,
                 formData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: authHeader(),
-                    },
-                }
-            );
-
-            // Update local state
+                { headers: { "Content-Type": "application/json", Authorization: authHeader() } }
+            )
             setItems((prev) =>
                 prev.map((item) =>
                     item.card_uid === editingItem.card_uid ? { ...item, ...formData } : item
                 )
-            );
-            alert("Updated succesfully")
-
-            setEditingItem(null); // Close modal
+            )
+            setEditingItem(null)
         } catch (err) {
-            console.error("Failed to update", err);
+            console.error("Failed to update", err)
         }
-    };
-
+    }
 
     const handleDelete = async () => {
-        if (!deleteItem) return;
-
-        setDeleting(true);
-
+        if (!deleteItem) return
+        setDeleting(true)
         try {
             await axios.delete(
                 `https://edutele-pay-backend.onrender.com/api/cards/${deleteItem.card_uid}`,
-                {
-                    headers: {
-                        Authorization: authHeader(),
-                    },
-                }
-            );
-
-            // Remove item from table immediately
-            setItems((prev) =>
-                prev.filter((item) => item.card_uid !== deleteItem.card_uid)
-            );
-
-            setDeleteItem(null);
+                { headers: { Authorization: authHeader() } }
+            )
+            setItems((prev) => prev.filter((item) => item.card_uid !== deleteItem.card_uid))
+            setDeleteItem(null)
         } catch (err) {
-            console.error("Delete failed", err);
+            console.error("Delete failed", err)
         } finally {
-            setDeleting(false);
+            setDeleting(false)
         }
-    };
+    }
 
+    const statusClass = (status) => {
+        if (!status) return "badge badge-inactive"
+        const s = status.toLowerCase()
+        if (s === "active") return "badge badge-active"
+        if (s === "inactive") return "badge badge-inactive"
+        return "badge badge-pending"
+    }
+
+    const fields = [
+        { key: "name", label: "Name" },
+        { key: "type", label: "Type" },
+        { key: "status", label: "Status" },
+        { key: "email", label: "Email" },
+        { key: "location", label: "Location" },
+        { key: "contact_person", label: "Contact Person" },
+        { key: "contact_phone", label: "Contact Phone" },
+    ]
 
     return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                {/* <Navbar /> */}
-                <SectionHeader title="Cards Management" />
-                <div className="ml-20">
-                    <h2>Available Card <span className="ml-20 text-blue-700"><Link to="/create-card">Add a Card</Link> </span> </h2>
-                </div>
-                <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
+                <SectionHeader title="Manage Cards" showDashboard={true} />
+
+                {/* ── Toolbar ── */}
+                <div className="flex items-center justify-between px-8 py-4 page-toolbar">
                     <input
                         type="text"
-                        placeholder="Search..."
-                        className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Search by card number..."
+                        className="w-full md:w-72 px-4 py-2 page-search-input"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    <Link to="/create-card" className="page-add-btn ml-4 px-5 py-2 whitespace-nowrap">
+                        + Add Card
+                    </Link>
                 </div>
-                <div className="p-10 w-full">
-                    <table className=" bg-white mt-6 w-full">
-                        <thead>
-                            <tr>
-                                <th className="py-2 px-4 border-b border-gray-200">Card Number</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Card Status</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Balance</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Total Topups</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Total Spent</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Total refunds</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Edit</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Delete</th>
-                            </tr>
-                        </thead>
+
+                {/* ── Table ── */}
+                <div className="px-8 pb-10">
+                    <div className="w-full overflow-x-auto page-table-wrapper">
                         {loading ? (
-                            <div className="w-full border p-2 rounded flex items-center justify-center">
-                                <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                            <div className="flex items-center justify-center py-16">
+                                <div className="h-6 w-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+                            </div>
+                        ) : error ? (
+                            <div className="flex items-center justify-center py-16 page-error">
+                                {error}
                             </div>
                         ) : (
-                            <tbody>
-                                {filteredItems.map((item) => (
-                                    <tr
-                                        key={item.card_uid}
-                                        onClick={() => { navigate(`/card/${item.card_uid}`) }}
-                                        className="cursor-pointer hover-bg-gray-100"
-                                    >
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.card_number}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.status}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.balance}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.total_topups}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.total_spent}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{item.total_refunds}</td>
-                                        <td onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleEditClick()
-                                        }} className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer">Edit</td>
-                                        <td onClick={(e) => {
-                                            e.stopPropagation();
-                                            setDeleteItem(item)
-                                        }} className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer">Delete</td>
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="page-thead-row">
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Card Number</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Status</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Balance</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Total Topups</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Total Spent</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Total Refunds</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Edit Card</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Delete Card</th>
                                     </tr>
-                                ))}
-                            </tbody>
+                                </thead>
+                                <tbody>
+                                    {filteredItems.map((item) => (
+                                        <tr
+                                            key={item.card_uid}
+                                            onClick={() => navigate(`/card/${item.card_uid}`)}
+                                            className="page-tbody-row cursor-pointer"
+                                        >
+                                            <td className="px-4 py-3 page-td-primary">{item.card_number}</td>
+                                            <td className="px-4 py-3">
+                                                <span className={statusClass(item.status)}>{item.status}</span>
+                                            </td>
+                                            <td className="px-4 py-3">${item.balance}</td>
+                                            <td className="px-4 py-3">${item.total_topups}</td>
+                                            <td className="px-4 py-3">${item.total_spent}</td>
+                                            <td className="px-4 py-3">${item.total_refunds}</td>
+                                            <td className="px-4 py-3">
+                                                <button
+                                                    className="page-btn-edit px-3 py-1"
+                                                    onClick={(e) => { e.stopPropagation(); handleEditClick(item) }}
+                                                >
+                                                    Edit
+                                                </button>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <button
+                                                    className="page-btn-delete px-3 py-1"
+                                                    onClick={(e) => { e.stopPropagation(); setDeleteItem(item) }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         )}
-                    </table>
+                    </div>
                 </div>
+
+                {/* ── Edit Modal ── */}
                 {editingItem && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded-lg w-180 max-h-[90vh] overflow-y-auto">
-                            <h2 className="text-lg font-bold mb-4">Edit {editingItem.name}</h2>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Name"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 page-modal-overlay">
+                        <div className="w-full max-w-md max-h-[90vh] overflow-y-auto p-8 page-modal">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="page-modal-title">Edit Card</h2>
+                                <button className="page-modal-close" onClick={() => setEditingItem(null)}>✕</button>
                             </div>
 
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Type</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Type"
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                />
-                            </div>
+                            {fields.map(({ key, label }) => (
+                                <div key={key} className="mb-4">
+                                    <label className="block mb-1 page-form-label">{label}</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-3 py-2 page-form-input"
+                                        placeholder={label}
+                                        value={formData[key] || ""}
+                                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                                    />
+                                </div>
+                            ))}
 
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Status</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Status"
-                                    value={formData.status}
-                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Email"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Location"
-                                    value={formData.location}
-                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })} />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Contact Person"
-                                    value={formData.contact_person}
-                                    onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })} />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Contact Phone"
-                                    value={formData.contact_phone}
-                                    onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })} />
-                            </div>
-
-                            {/* Add other fields in the same way */}
-
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    className="bg-gray-300 px-4 py-2 rounded mr-2"
-                                    onClick={() => setEditingItem(null)}
-                                >
+                            <div className="flex justify-end gap-3 mt-6">
+                                <button className="px-5 py-2 page-btn-cancel" onClick={() => setEditingItem(null)}>
                                     Cancel
                                 </button>
-                                <button
-                                    className="bg-blue-600 text-white px-4 py-2 rounded"
-                                    onClick={handleSave}
-                                >
-                                    Save
+                                <button className="px-5 py-2 page-btn-save" onClick={handleSave}>
+                                    Save Changes
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
+                {/* ── Delete Modal ── */}
                 {deleteItem && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 w-96">
-                            <h2 className="text-lg font-semibold mb-3 text-red-600">
-                                Confirm Delete
-                            </h2>
-
-                            <p className="mb-4">
-                                Are you sure you want to delete{" "}
-                                <strong>{deleteItem.name}</strong>?
-                                This action cannot be undone.
+                    <div className="fixed inset-0 flex items-center justify-center z-50 page-modal-overlay">
+                        <div className="w-full max-w-sm p-8 page-modal page-modal-danger">
+                            <div className="page-danger-icon mb-4">
+                                <span>🗑</span>
+                            </div>
+                            <h2 className="page-modal-title mb-2">Confirm Delete</h2>
+                            <p className="page-modal-body mb-6">
+                                Are you sure you want to delete <strong>{deleteItem.card_number}</strong>? This action cannot be undone.
                             </p>
-
-                            <div className="flex justify-end gap-2">
+                            <div className="flex justify-end gap-3">
                                 <button
-                                    className="px-4 py-2 rounded bg-gray-300"
+                                    className="px-5 py-2 page-btn-cancel"
                                     onClick={() => setDeleteItem(null)}
                                     disabled={deleting}
                                 >
                                     Cancel
                                 </button>
-
                                 <button
-                                    className="px-4 py-2 rounded bg-red-600 text-white"
-                                    disabled={deleting}
+                                    className="px-5 py-2 page-btn-danger"
                                     onClick={handleDelete}
+                                    disabled={deleting}
                                 >
                                     {deleting ? "Deleting..." : "Delete"}
                                 </button>
@@ -327,9 +256,9 @@ const Cards = () => {
                         </div>
                     </div>
                 )}
+
             </MainContent>
         </div>
-
     )
 }
 

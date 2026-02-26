@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import MainContent from "../Components/MainContent";
-import NavBar from "../Components/NavBar";
 import SectionHeader from "../Components/SectionHeader";
 import Sidebar from "../Components/SideBar";
 import axios from "axios";
 import { authHeader } from "../utils/authHeader";
+import '../PageComponents.css'
 
 const CreateCard = () => {
     const [cardNumber, setCardNumber] = useState("")
@@ -16,21 +16,16 @@ const CreateCard = () => {
         const fetchCards = async () => {
             try {
                 const resp = await axios.get("https://edutele-pay-backend.onrender.com/api/cards", {
-                    headers: {
-                        Authorization: authHeader()
-                    }
+                    headers: { Authorization: authHeader() }
                 })
                 const cards = resp.data.items || []
                 setExistingCards(cards)
-                
-                // Find highest number
                 const numbers = cards.map(card => {
                     const match = card.card_number.match(/\d+/)
                     return match ? parseInt(match[0]) : 0
                 })
                 const highest = Math.max(...numbers, 0)
-                const nextNum = (highest + 1).toString().padStart(3, '0')
-                setCardNumber(`EDU-${nextNum}`)
+                setCardNumber(`EDU-${(highest + 1).toString().padStart(3, '0')}`)
             } catch (err) {
                 console.log(err)
             }
@@ -40,93 +35,87 @@ const CreateCard = () => {
 
     const checkIfExists = (value) => {
         const exists = existingCards.some(card => card.card_number === value)
-        if (exists) {
-            setWarning("This card number already exists!")
-        } else {
-            setWarning("")
-        }
+        setWarning(exists ? "This card number already exists!" : "")
     }
 
-    const SubmitCard = async(e) => {
+    const SubmitCard = async (e) => {
         e.preventDefault()
-        
-        // Check again before submitting
         if (existingCards.some(card => card.card_number === cardNumber)) {
             setWarning("Cannot create: Card number already exists!")
             return
         }
-
-        const payload = {
-            card_number: cardNumber
-        }
         setLoading(true)
-        try{
-            const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/cards/preprinted", payload, {
-                headers :{
-                    "Content-Type" : "application/json",
-                    Authorization: authHeader()
-                }
-            })
-            console.log(resp.data)
-            setLoading(false)
-            // Update existing cards and suggest next
+        try {
+            const resp = await axios.post(
+                "https://edutele-pay-backend.onrender.com/api/cards/preprinted",
+                { card_number: cardNumber },
+                { headers: { "Content-Type": "application/json", Authorization: authHeader() } }
+            )
             const numbers = [...existingCards, resp.data].map(card => {
                 const match = card.card_number.match(/\d+/)
                 return match ? parseInt(match[0]) : 0
             })
             const highest = Math.max(...numbers)
-            const nextNum = (highest + 1).toString().padStart(3, '0')
-            setCardNumber(`EDU-${nextNum}`)
+            setCardNumber(`EDU-${(highest + 1).toString().padStart(3, '0')}`)
             setExistingCards(prev => [...prev, resp.data])
-        }catch(err){
+        } catch (err) {
             console.log(err)
+        } finally {
             setLoading(false)
         }
     }
 
-    return(
+    const suggestedNext = `EDU-${(Math.max(...existingCards.map(c => {
+        const match = c.card_number.match(/\d+/)
+        return match ? parseInt(match[0]) : 0
+    }), 0) + 1).toString().padStart(3, '0')}`
+
+    return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
-            <NavBar />
-            <SectionHeader title="Create New Card" />
-            <div className="p-10 w-full flex items-center justify-center">
-                <form className="bg-white p-6 rounded shadow-md w-3/4" onSubmit={SubmitCard}> 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Card Number</label>
-                        <input 
-                            type="text" 
-                            value={cardNumber} 
-                            onChange={(e) => {
-                                setCardNumber(e.target.value)
-                                checkIfExists(e.target.value)
-                            }} 
-                            className={`w-full px-3 py-2 border rounded ${warning ? 'border-red-500' : ''}`} 
-                            placeholder="Enter card Number" 
-                        />
-                        {warning && (
-                            <p className="text-red-500 text-sm mt-1">{warning}</p>
-                        )}
-                        <p className="text-sm text-gray-500 mt-1">
-                            Suggested next: EDU-{(Math.max(...existingCards.map(c => {
-                                const match = c.card_number.match(/\d+/)
-                                return match ? parseInt(match[0]) : 0
-                            }), 0) + 1).toString().padStart(3, '0')}
-                        </p>
-                    </div>
-                    { loading ? (
-                        <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-                    ):(
-                        <button 
-                            type="submit" 
-                            className={`px-4 py-2 rounded ${warning ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
-                            disabled={warning}
-                        >
-                            Create Card
-                        </button>
-                    )}
-                </form>
-            </div>
+                <SectionHeader title="Create New Card" showBack={true} backTo="/cards" />
+
+                <div className="flex items-start justify-center px-8 py-10">
+                    <form className="w-full max-w-lg page-form-container" onSubmit={SubmitCard}>
+
+                        <div className="mb-6">
+                            <label className="block mb-1 page-form-label">Card Number</label>
+                            <input
+                                type="text"
+                                value={cardNumber}
+                                onChange={(e) => {
+                                    setCardNumber(e.target.value)
+                                    checkIfExists(e.target.value)
+                                }}
+                                placeholder="Enter card number"
+                                className={`w-full px-3 py-2 page-form-input ${warning ? 'input-error' : ''}`}
+                            />
+                            {warning && (
+                                <p className="mt-1 text-sm page-warning">{warning}</p>
+                            )}
+                            <p className="mt-1 text-sm page-hint">
+                                Suggested next: <span className="page-hint-value">{suggestedNext}</span>
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            {loading ? (
+                                <div className="h-5 w-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+                            ) : (
+                                <button
+                                    type="submit"
+                                    disabled={!!warning}
+                                    className="px-6 py-2 page-btn-save"
+                                >
+                                    Create Card
+                                </button>
+                            )}
+                        </div>
+
+                    </form>
+                </div>
+
             </MainContent>
         </div>
     )

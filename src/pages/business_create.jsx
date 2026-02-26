@@ -2,9 +2,9 @@ import { useState } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
 import MainContent from "../Components/MainContent"
-import NavBar from "../Components/NavBar"
 import SectionHeader from "../Components/SectionHeader"
 import Sidebar from "../Components/SideBar"
+import '../PageComponents.css'
 
 const RegisterBusiness = () => {
     const [name, setName] = useState("")
@@ -15,9 +15,16 @@ const RegisterBusiness = () => {
     const [contactPerson, setContactPerson] = useState("")
     const [contactPhone, setContactPhone] = useState("")
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
 
     const registerBusiness = async (e) => {
         e.preventDefault()
+        
+        // Simple validation
+        if (!name || !type || !email || !phone) {
+            setError("Please fill in all required fields")
+            return
+        }
 
         const payload = {
             name: name,
@@ -30,6 +37,7 @@ const RegisterBusiness = () => {
         }
 
         setLoading(true)
+        setError("")
 
         try {
             const resp = await axios.post(
@@ -44,115 +52,90 @@ const RegisterBusiness = () => {
             )
 
             console.log(resp.data)
-            alert("Successful, Check your email for passwords")
+            alert("Successful! Check your email for passwords")
+            
+            // Clear form
+            setName("")
+            setType("")
+            setEmail("")
+            setPhone("")
+            setLocation("")
+            setContactPerson("")
+            setContactPhone("")
+            
             setLoading(false)
         } catch (err) {
             console.log(err)
+            setError("Failed to register business. Please try again.")
             setLoading(false)
         }
     }
 
+    const fields = [
+        { label: "Business Name", value: name, setter: setName, key: "name", required: true },
+        { label: "Type", value: type, setter: setType, key: "type", placeholder: "eg school", required: true },
+        { label: "Email", value: email, setter: setEmail, key: "email", type: "email", required: true },
+        { label: "Phone", value: phone, setter: setPhone, key: "phone", placeholder: "Enter phone number", required: true },
+        { label: "Location", value: location, setter: setLocation, key: "location", required: false },
+        { label: "Contact Person", value: contactPerson, setter: setContactPerson, key: "contactPerson", required: false },
+        { label: "Contact Phone", value: contactPhone, setter: setContactPhone, key: "contactPhone", required: false },
+    ]
+
     return (
-        <>
+        <div className="w-full">
             <Sidebar />
             <MainContent>
-                <NavBar />
-                <SectionHeader title="Create Business" />
+                <SectionHeader title="Create Business" showBack={true} backTo="/business" />
 
-                <div className="h-screen w-full">
-                    <div className="flex flex-col items-center justify-center">
-                        <form className="bg-white p-6 rounded shadow-md w-2/4" onSubmit={registerBusiness}>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Business Name</label>
+                <div className="flex items-start justify-center px-8 py-10">
+                    <form className="w-full max-w-lg page-form-container" onSubmit={registerBusiness}>
+                        
+                        {error && (
+                            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <p className="text-sm text-red-600">{error}</p>
+                            </div>
+                        )}
+
+                        {fields.map(({ label, value, setter, key, type = "text", placeholder, required }) => (
+                            <div key={key} className="mb-6">
+                                <label className="block mb-1 page-form-label">
+                                    {label}
+                                    {required && <span className="text-red-500 ml-1">*</span>}
+                                </label>
                                 <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded"
-                                    placeholder="Enter business name"
+                                    type={type}
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    className="w-full px-3 py-2 page-form-input"
+                                    placeholder={placeholder || `Enter ${label.toLowerCase()}`}
+                                    required={required}
                                 />
                             </div>
+                        ))}
 
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Type</label>
-                                <input
-                                    type="text"
-                                    value={type}
-                                    onChange={(e) => setType(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded"
-                                    placeholder="eg school"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded"
-                                    placeholder="Enter email"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                                <input
-                                    type="text"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded"
-                                    placeholder="Enter phone number"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
-                                <input
-                                    type="text"
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded"
-                                    placeholder="Enter location"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
-                                <input
-                                    type="text"
-                                    value={contactPerson}
-                                    onChange={(e) => setContactPerson(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded"
-                                    placeholder="Enter contact person"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
-                                <input
-                                    type="text"
-                                    value={contactPhone}
-                                    onChange={(e) => setContactPhone(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded"
-                                    placeholder="Enter contact phone"
-                                />
-                            </div>
-
+                        <div className="flex items-center gap-4">
                             {loading ? (
-                                <div className="w-full border p-2 rounded flex items-center justify-center">
-                                    <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                                <div className="flex items-center justify-center py-2">
+                                    <div className="h-5 w-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
                                 </div>
                             ) : (
-                                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                <button
+                                    type="submit"
+                                    className="px-6 py-2 page-btn-save"
+                                >
                                     Add Business
                                 </button>
                             )}
-                        </form>
-                    </div>
+                        </div>
+
+                        <p className="mt-4 text-xs text-gray-500">
+                            <span className="text-red-500">*</span> Required fields
+                        </p>
+                    </form>
                 </div>
+
             </MainContent>
-        </>
+        </div>
     )
 }
 

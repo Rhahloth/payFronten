@@ -3,104 +3,150 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
 import Sidebar from "../Components/SideBar"
-import NavBar from "../Components/NavBar"
 import MainContent from "../Components/MainContent"
 import SectionHeader from "../Components/SectionHeader"
+import '../PageComponents.css'
 
+const details = [
+    { label: "Vendor Code", key: "vendor_code" },
+    { label: "Name", key: "name" },
+    { label: "Type", key: "type" },
+    { label: "Email", key: "email" },
+    { label: "Location", key: "location" },
+    { label: "Contact Person", key: "contact_person" },
+    { label: "Contact Phone", key: "contact_phone" },
+    { label: "Status", key: "status", isBadge: true },
+    { label: "Created At", key: "created_at", isDate: true },
+    { label: "Updated At", key: "updated_at", isDate: true },
+]
 
 const VendorDetails = () => {
-
     const { public_id } = useParams()
-    const [item, setItem] = useState([])
+    const [item, setItem] = useState(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const Fetch = async () => {
-            console.log(public_id)
+        const fetchVendor = async () => {
             try {
-                const resp = await axios.get(`https://edutele-pay-backend.onrender.com/api/vendors/${public_id}`, {
-                    headers: {
-                        Authorization: authHeader(),
+                const resp = await axios.get(
+                    `https://edutele-pay-backend.onrender.com/api/vendors/${public_id}`,
+                    {
+                        headers: { Authorization: authHeader() }
                     }
-                })
-                console.log("Response data", resp.data)
+                )
                 setItem(resp.data)
             } catch (err) {
-                console.log("Error fetching card:", err)
+                console.log("Error fetching vendor:", err)
             } finally {
                 setLoading(false)
             }
         }
-
-        Fetch()
-
+        fetchVendor()
     }, [public_id])
 
-    if (!item) return <div>Vendor not found</div>;
+    const statusClass = (status) => {
+        if (!status) return "badge badge-inactive"
+        const s = status.toLowerCase()
+        if (s === "active") return "badge badge-active"
+        if (s === "inactive") return "badge badge-inactive"
+        if (s === "pending") return "badge badge-pending"
+        return "badge badge-pending"
+    }
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "—"
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
+    if (loading) return (
+        <div className="w-full">
+            <Sidebar />
+            <MainContent>
+                <div className="flex items-center justify-center h-64">
+                    <div className="h-6 w-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+                </div>
+            </MainContent>
+        </div>
+    )
+
+    if (!item) return (
+        <div className="w-full">
+            <Sidebar />
+            <MainContent>
+                <div className="flex items-center justify-center h-64 text-gray-500">Vendor not found</div>
+            </MainContent>
+        </div>
+    )
 
     return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                <NavBar />
-                <SectionHeader title="Vendor Details" />
-                <div className="p-10 w-full">
+                <SectionHeader title="Vendor Details" showBack={true} backTo="/vendors" />
 
-                    {/* Top Section */}
-                    <div className="flex items-center justify-between px-6 border-b border-gray-200">
-                        <h2 className="text-lg font-semibold text-gray-800">{item.name} - {item.vendor_code}</h2>
-                        <p className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                            {item.status}
-                        </p>
+                <div className="flex justify-center px-8 py-10">
+                    <div className="w-full max-w-xl page-detail-wrapper">
+
+                        {/* ── Header ── */}
+                        <div className="flex items-center justify-between px-6 py-4 page-detail-header">
+                            <span className="page-detail-primary">
+                                {item.name}
+                            </span>
+                            <span className={statusClass(item.status)}>
+                                {item.status}
+                            </span>
+                        </div>
+
+                        {/* ── Details Rows ── */}
+                        <div className="px-6">
+                            {details.map(({ label, key, isBadge, isDate }) => {
+                                if (item[key] === undefined) return null
+                                
+                                return (
+                                    <div key={key} className="flex items-center justify-between py-3 page-detail-row">
+                                        <span className="page-detail-label">{label}</span>
+                                        {isBadge ? (
+                                            <span className={statusClass(item[key])}>{item[key]}</span>
+                                        ) : isDate ? (
+                                            <span className="page-detail-value">
+                                                {formatDate(item[key])}
+                                            </span>
+                                        ) : (
+                                            <span className="page-detail-value">
+                                                {item[key] ?? "—"}
+                                            </span>
+                                        )}
+                                    </div>
+                                )
+                            })}
+
+                            {/* Show vendor code prominently if it exists */}
+                            {item.vendor_code && !details.some(d => d.key === 'vendor_code') && (
+                                <div className="flex items-center justify-between py-3 page-detail-row">
+                                    <span className="page-detail-label">Vendor Code</span>
+                                    <span className="page-detail-value">{item.vendor_code}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ── Additional Info if needed ── */}
+                        {item.business_public_id && (
+                            <div className="px-6 py-3 border-t border-gray-100">
+                                <div className="flex items-center justify-between py-2">
+                                    <span className="page-detail-label">Business ID</span>
+                                    <span className="page-detail-value font-mono text-xs">{item.business_public_id}</span>
+                                </div>
+                            </div>
+                        )}
+
                     </div>
-
-                    {/* Middle Section (Key-Value pairs) */}
-                    <div className="p-10 w-full">
-
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Email</span>
-                            <span className="font-semibold">{item.email}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Type</span>
-                            <span className="font-semibold">{item.type}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Location</span>
-                            <span className="font-semibold">{item.location}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Contact Person</span>
-                            <span className="font-semibold">{item.contact_person}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Contact Phone</span>
-                            <span className="font-semibold">{item.contact_phone}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Created</span>
-                            <span className="font-semibold">{item.created_at}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Updated</span>
-                            <span className="font-semibold">{item.updated_at}</span>
-                        </div>
-                        <hr className="text-gray-200"/>
-                    </div>
-
                 </div>
-
 
             </MainContent>
         </div>

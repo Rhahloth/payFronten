@@ -5,20 +5,9 @@ import SectionHeader from "../Components/SectionHeader"
 import Sidebar from "../Components/SideBar"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
+import '../PageComponents.css'
 
-
-
-const CreateVendor = () =>{
-
-    // {
-    //     "name": "string",
-    //     "email": "user@example.com",
-    //     "type": "canteen",
-    //     "location": "string",
-    //     "contact_person": "string",
-    //     "contact_phone": "string"
-    // }
-
+const CreateVendor = () => {
     const [vendorName, setVendorName] = useState("")
     const [vendorEmail, setVendorEmail] = useState("")
     const [vendorType, setVendorType] = useState("")
@@ -26,9 +15,16 @@ const CreateVendor = () =>{
     const [vendorContactPerson, setVendorContactPerson] = useState("")
     const [vendorContactPhone, setVendorContactPhone] = useState("")
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
 
-    const CreateVendor = async(e) => {
+    const CreateVendor = async (e) => {
         e.preventDefault()
+
+        // Simple validation
+        if (!vendorName || !vendorEmail || !vendorType) {
+            setError("Please fill in all required fields")
+            return
+        }
 
         const payload = {
             name: vendorName,
@@ -38,71 +34,104 @@ const CreateVendor = () =>{
             contact_person: vendorContactPerson,
             contact_phone: vendorContactPhone
         }
+        
         setLoading(true)
-        try{
-            const resp = await axios.post("https://edutele-pay-backend.onrender.com/api/vendors", payload, {
-                headers:{
-                    "Content-Type": "application/json",
-                    Authorization: authHeader()
+        setError("")
+        
+        try {
+            const resp = await axios.post(
+                "https://edutele-pay-backend.onrender.com/api/vendors", 
+                payload, 
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: authHeader()
+                    }
                 }
-            })
+            )
             
             console.log(resp.data)
             alert("Vendor created successfully")
+            
+            // Clear form
+            setVendorName("")
+            setVendorEmail("")
+            setVendorType("")
+            setVendorLocation("")
+            setVendorContactPerson("")
+            setVendorContactPhone("")
+            
             setLoading(false)
-
-        }catch(err){
+        } catch (err) {
             console.log(err)
+            setError(err?.response?.data?.detail || "Failed to create vendor")
             setLoading(false)
         }
-
     }
 
-    return(
+    const fields = [
+        { label: "Vendor Name", value: vendorName, setter: setVendorName, key: "name", type: "text", placeholder: "Enter vendor name", required: true },
+        { label: "Email", value: vendorEmail, setter: setVendorEmail, key: "email", type: "email", placeholder: "Enter vendor email", required: true },
+        { label: "Type", value: vendorType, setter: setVendorType, key: "type", type: "text", placeholder: "Enter vendor type (e.g., canteen)", required: true },
+        { label: "Location", value: vendorLocation, setter: setVendorLocation, key: "location", type: "text", placeholder: "Enter location", required: false },
+        { label: "Contact Person", value: vendorContactPerson, setter: setVendorContactPerson, key: "contactPerson", type: "text", placeholder: "Enter contact person", required: false },
+        { label: "Contact Phone", value: vendorContactPhone, setter: setVendorContactPhone, key: "contactPhone", type: "tel", placeholder: "Enter contact phone", required: false },
+    ]
+
+    return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                <NavBar />
-                <SectionHeader title="Create New Vendor" />
+                <SectionHeader title="Create New Vendor" showBack={true} backTo="/vendors" />
 
-                <div className="p-10 w-full flex items-center justify-center">
-                    <form className="bg-white p-6 rounded shadow-md w-3/4" onSubmit={CreateVendor}>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Vendor Name</label>
-                            <input type="text" onChange={(e) => setVendorName(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter vendors name" />
+                <div className="flex items-start justify-center px-8 py-10">
+                    <form className="w-full max-w-lg page-form-container" onSubmit={CreateVendor}>
+                        
+                        {error && (
+                            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <p className="text-sm text-red-600">{error}</p>
+                            </div>
+                        )}
+
+                        {fields.map(({ label, value, setter, key, type, placeholder, required }) => (
+                            <div key={key} className="mb-6">
+                                <label className="block mb-1 page-form-label">
+                                    {label}
+                                    {required && <span className="text-red-500 ml-1">*</span>}
+                                </label>
+                                <input
+                                    type={type}
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    className="w-full px-3 py-2 page-form-input"
+                                    placeholder={placeholder}
+                                    required={required}
+                                />
+                            </div>
+                        ))}
+
+                        <div className="flex items-center gap-4">
+                            {loading ? (
+                                <div className="flex items-center justify-center py-2">
+                                    <div className="h-5 w-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+                                </div>
+                            ) : (
+                                <button
+                                    type="submit"
+                                    className="px-6 py-2 page-btn-save"
+                                >
+                                    Add Vendor
+                                </button>
+                            )}
                         </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                            <input type="email" onChange={(e) => setVendorEmail(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter vendor email" />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2"> Type</label>
-                            <input type="text" onChange={(e) => setVendorType(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter vendor type" />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2"> Location</label>
-                            <input type="text" onChange={(e) => setVendorLocation} className="w-full px-3 py-2 border rounded" placeholder="Enter your location" />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2"> Contact Person</label>
-                            <input type="text" onChange={(e) => setVendorContactPerson(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter contact person" />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2"> Contact Phone</label>
-                            <input type="text" onChange={(e) => setVendorContactPhone(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Enter contact phone" />
-                        </div>
-                         {loading ? (
-                    <div className="">
-                        <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-                    </div>
-                ) : (
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Vendor</button>
-                )}
+
+                        <p className="mt-4 text-xs text-gray-500">
+                            <span className="text-red-500">*</span> Required fields
+                        </p>
                     </form>
                 </div>
 
             </MainContent>
-
         </div>
     )
 }

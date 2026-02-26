@@ -6,6 +6,7 @@ import Sidebar from "../Components/SideBar"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { authHeader } from "../utils/authHeader"
+import '../PageComponents.css'
 
 const AgentAdmin = () => {
     const [searchTerm, setSearchTerm] = useState("")
@@ -54,7 +55,18 @@ const AgentAdmin = () => {
         setFilteredItems(filtered)
     }, [searchTerm, items])
 
-    const handleEditClick = (item) => {
+    const statusClass = (status) => {
+        if (!status) return "badge badge-inactive"
+        const s = status.toLowerCase()
+        if (s === "active") return "badge badge-active"
+        if (s === "inactive") return "badge badge-inactive"
+        if (s === "pending") return "badge badge-pending"
+        if (s === "suspended" || s === "blocked" || s === "deleted") return "badge badge-inactive"
+        return "badge badge-pending"
+    }
+
+    const handleEditClick = (item, e) => {
+        e.stopPropagation()
         setEditingItem(item)
         setFormData({
             email: item.email || "",
@@ -118,198 +130,184 @@ const AgentAdmin = () => {
         }
     }
 
+    const fields = [
+        { key: "email", label: "Email", type: "email" },
+        { key: "phone", label: "Phone", type: "tel" },
+    ]
+
     return (
         <div className="w-full">
             <Sidebar />
             <MainContent>
-                {/* <NavBar /> */}
-                <SectionHeader title="View All Accounts" />
+                <SectionHeader title="View All Accounts" showDashboard={true} />
 
-                <div className="ml-20">
-                    <h2>
-                        Available Accounts ({total})
-                        <span className="ml-20 text-blue-700">
-                            <Link to="/create-agent-admin">Create Account</Link>
-                        </span>
-                    </h2>
-                </div>
-
-                <div className="top-0 left-20 w-full h-16 border-b border-gray-200 flex items-center px-4 shadow-md z-10">
+                {/* ── Toolbar with Search and Add Button ── */}
+                <div className="flex items-center justify-between px-8 py-4 page-toolbar">
                     <input
                         type="text"
                         placeholder="Search by username..."
-                        className="ml-15 w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full md:w-72 px-4 py-2 page-search-input"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    <Link to="/create-agent-admin" className="page-add-btn ml-4 px-5 py-2 whitespace-nowrap">
+                        + Create Account
+                    </Link>
                 </div>
 
                 {error && (
-                    <div className="px-10 pt-4 text-red-600">{error}</div>
+                    <div className="px-8 pt-4">
+                        <p className="page-error">{error}</p>
+                    </div>
                 )}
 
-                <div className="p-10 w-full">
-                    <table className="bg-white mt-6 w-full">
-                        <thead>
-                            <tr>
-                                <th className="py-2 px-4 border-b border-gray-200">Username</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Email</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Phone</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Role</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Status</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Edit</th>
-                                <th className="py-2 px-4 border-b border-gray-200">Delete</th>
-                            </tr>
-                        </thead>
-
+                {/* ── Table ── */}
+                <div className="px-8 pb-10">
+                    <div className="w-full overflow-x-auto page-table-wrapper">
                         {loading ? (
-                            <tbody>
-                                <tr>
-                                    <td colSpan="7" className="p-4">
-                                        <div className="w-full border p-2 rounded flex items-center justify-center">
-                                            <div className="h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            <div className="flex items-center justify-center py-16">
+                                <div className="h-6 w-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+                            </div>
                         ) : (
-                            <tbody>
-                                {filteredItems.map((user) => (
-                                    <tr
-                                        key={user.public_id}
-                                        onClick={() => navigate(`/user-detail/${user.public_id}`)}
-                                        className="cursor-pointer hover:bg-gray-100"
-                                    >
-                                        <td className="py-2 px-4 border-b border-gray-200">{user.username}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{user.email}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{user.phone}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{user.role}</td>
-                                        <td className="py-2 px-4 border-b border-gray-200">{user.status}</td>
-
-                                        <td
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                handleEditClick(user)
-                                            }}
-                                            className="py-2 px-4 border-b border-gray-200 text-blue-600 cursor-pointer"
-                                        >
-                                            Edit
-                                        </td>
-
-                                        <td
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                setDeleteItem(user)
-                                            }}
-                                            className="py-2 px-4 border-b border-gray-200 text-red-600 cursor-pointer"
-                                        >
-                                            Delete
-                                        </td>
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="page-thead-row">
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Username</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Email</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Phone</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Role</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Status</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Edit</th>
+                                        <th className="px-4 py-3 text-left whitespace-nowrap">Delete</th>
                                     </tr>
-                                ))}
-                            </tbody>
+                                </thead>
+                                <tbody>
+                                    {filteredItems.map((user) => (
+                                        <tr
+                                            key={user.public_id}
+                                            onClick={() => navigate(`/user-detail/${user.public_id}`)}
+                                            className="page-tbody-row cursor-pointer"
+                                        >
+                                            <td className="px-4 py-3 page-td-primary">{user.username}</td>
+                                            <td className="px-4 py-3">{user.email}</td>
+                                            <td className="px-4 py-3">{user.phone}</td>
+                                            <td className="px-4 py-3">{user.role}</td>
+                                            <td className="px-4 py-3">
+                                                <span className={statusClass(user.status)}>
+                                                    {user.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <button
+                                                    className="page-btn-edit px-3 py-1"
+                                                    onClick={(e) => handleEditClick(user, e)}
+                                                >
+                                                    Edit
+                                                </button>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <button
+                                                    className="page-btn-delete px-3 py-1"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setDeleteItem(user)
+                                                    }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         )}
-                    </table>
+                    </div>
+                    
+                    <div className="mt-4 text-sm text-gray-600">Total: {total}</div>
                 </div>
-
-                {editingItem && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded-lg w-180">
-                            <h2 className="text-lg font-bold mb-4">
-                                Edit {editingItem.username}
-                            </h2>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Email"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                                <input
-                                    type="text"
-                                    className="w-full mb-2 border p-2 rounded"
-                                    placeholder="Phone"
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Status</label>
-                                <select
-                                    className="w-full mb-2 border p-2 rounded"
-                                    value={formData.status}
-                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                >
-                                    <option value="">Select status</option>
-                                    <option value="pending">pending</option>
-                                    <option value="active">active</option>
-                                    <option value="inactive">inactive</option>
-                                    <option value="suspended">suspended</option>
-                                    <option value="blocked">blocked</option>
-                                    <option value="deleted">deleted</option>
-                                </select>
-                            </div>
-
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    className="bg-gray-300 px-4 py-2 rounded mr-2"
-                                    onClick={() => setEditingItem(null)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="bg-blue-600 text-white px-4 py-2 rounded"
-                                    onClick={handleSave}
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {deleteItem && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 w-96">
-                            <h2 className="text-lg font-semibold mb-3 text-red-600">
-                                Confirm Delete
-                            </h2>
-
-                            <p className="mb-4">
-                                Are you sure you want to delete{" "}
-                                <strong>{deleteItem.username}</strong>?
-                                This action cannot be undone.
-                            </p>
-
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    className="px-4 py-2 rounded bg-gray-300"
-                                    onClick={() => setDeleteItem(null)}
-                                    disabled={deleting}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    className="px-4 py-2 rounded bg-red-600 text-white"
-                                    disabled={deleting}
-                                    onClick={handleDelete}
-                                >
-                                    {deleting ? "Deleting..." : "Delete"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </MainContent>
+
+            {/* ── Edit Modal ── */}
+            {editingItem && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 page-modal-overlay">
+                    <div className="w-full max-w-md p-8 page-modal">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="page-modal-title">Edit {editingItem.username}</h2>
+                            <button className="page-modal-close" onClick={() => setEditingItem(null)}>✕</button>
+                        </div>
+
+                        {fields.map(({ key, label, type = "text" }) => (
+                            <div key={key} className="mb-4">
+                                <label className="block mb-1 page-form-label">{label}</label>
+                                <input
+                                    type={type}
+                                    className="w-full px-3 py-2 page-form-input"
+                                    placeholder={label}
+                                    value={formData[key] || ""}
+                                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                                />
+                            </div>
+                        ))}
+
+                        <div className="mb-4">
+                            <label className="block mb-1 page-form-label">Status</label>
+                            <select
+                                className="w-full px-3 py-2 page-form-input"
+                                value={formData.status}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            >
+                                <option value="">Select status</option>
+                                <option value="pending">Pending</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="blocked">Blocked</option>
+                                <option value="deleted">Deleted</option>
+                            </select>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button className="px-5 py-2 page-btn-cancel" onClick={() => setEditingItem(null)}>
+                                Cancel
+                            </button>
+                            <button className="px-5 py-2 page-btn-save" onClick={handleSave}>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Delete Modal ── */}
+            {deleteItem && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 page-modal-overlay">
+                    <div className="w-full max-w-sm p-8 page-modal page-modal-danger">
+                        <div className="page-danger-icon mb-4">
+                            <span>🗑</span>
+                        </div>
+                        <h2 className="page-modal-title mb-2">Confirm Delete</h2>
+                        <p className="page-modal-body mb-6">
+                            Are you sure you want to delete <strong>{deleteItem.username}</strong>? This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                className="px-5 py-2 page-btn-cancel"
+                                onClick={() => setDeleteItem(null)}
+                                disabled={deleting}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="px-5 py-2 page-btn-danger"
+                                onClick={handleDelete}
+                                disabled={deleting}
+                            >
+                                {deleting ? "Deleting..." : "Delete"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
